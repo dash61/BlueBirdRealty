@@ -1,9 +1,10 @@
 import PropTypes from 'prop-types'
-import React, { Component } from 'react'
+import React from 'react'
 import {
   Button,
   Container,
   //Divider,
+  Dropdown,
   Grid,
   Header,
   Icon,
@@ -36,13 +37,13 @@ import LogoAvatar from './LogoAvatar';
  * Neither Semantic UI nor Semantic UI React offer a responsive navbar, however, it can be implemented easily.
  * It can be more complicated, but you can create really flexible markup.
  */
-class DesktopContainer extends Component {
+class DesktopContainer extends React.Component {
   state = {}
 
   hideFixedMenu = () => this.setState({ fixed: false })
   showFixedMenu = () => this.setState({ fixed: true })
 
-  state = { activeItem: 'Home' }
+  state = { activeItem: '' }
 
   handleItemClick = (e, { name }) => this.setState({ activeItem: name })
 
@@ -68,6 +69,7 @@ class DesktopContainer extends Component {
             >
             <Segment inverted vertical as={Link} to='/'
               style={{ padding: '0', border: 'none' }}
+              name='Homey'
               >
               <LogoAvatar />
             </Segment>
@@ -80,7 +82,6 @@ class DesktopContainer extends Component {
               <Menu
                 fixed={fixed ? 'top' : null}
                 inverted={!fixed}
-                pointing={!fixed}
                 secondary={!fixed}
                 className='center'
                 size='large'
@@ -113,24 +114,26 @@ class DesktopContainer extends Component {
                     active={activeItem === 'Rent'}
                     onClick={this.handleItemClick}
                   />
-                  <Menu.Item
-                    name='More'
-                    as={Link} to='/map'
-                    active={activeItem === 'More'}
-                    onClick={this.handleItemClick}
-                  />
-                    <Button as={Link} to='/login' inverted={!fixed}
-                      name='blah' onClick={this.handleItemClick}
-                      style={{ marginLeft: '0.5em', position: 'absolute',
-                        right: '130px'}}>
-                      Log in
-                    </Button>
-                    <Button as={Link} to='/signup' inverted={!fixed}
-                      primary={fixed} name='blah2' onClick={this.handleItemClick}
-                      style={{ marginLeft: '0.5em', position: 'absolute',
-                        right: '20px'}}>
-                      Sign Up
-                    </Button>
+                  <Dropdown item text='More'>
+                    <Dropdown.Menu style={{zIndex: 500}}>
+                      <Dropdown.Item icon='calculator' text='Calculators' />
+                      <Dropdown.Item icon='edit' text='Edit Profile' />
+                      <Dropdown.Item icon='globe' text='Choose Language' />
+                      <Dropdown.Item icon='settings' text='Account Settings' />
+                    </Dropdown.Menu>
+                  </Dropdown>
+                  <Button as={Link} to='/login' inverted={!fixed}
+                    name='blah' onClick={this.handleItemClick}
+                    style={{ marginLeft: '0.5em', position: 'absolute',
+                      right: '130px'}}>
+                    Log in
+                  </Button>
+                  <Button as={Link} to='/signup' inverted={!fixed}
+                    primary={fixed} name='blah2' onClick={this.handleItemClick}
+                    style={{ marginLeft: '0.5em', position: 'absolute',
+                      right: '20px'}}>
+                    Sign Up
+                  </Button>
                 </Container>
               </Menu>
             </Segment>
@@ -143,6 +146,15 @@ class DesktopContainer extends Component {
   }
 }
 /* orig:
+menu, after inverted={!fixed}
+pointing={!fixed}
+
+<Menu.Item
+  name='More'
+  as={Link} to='/map'
+  active={activeItem === 'More'}
+  onClick={this.handleItemClick}
+/>
 <Menu.Item position='right' name='blah' onClick={this.handleItemClick}>
   <Button as={Link} to='/login' inverted={!fixed}>
     Log in
@@ -158,7 +170,7 @@ DesktopContainer.propTypes = {
   children: PropTypes.node,
 }
 
-class MobileContainer extends Component {
+class MobileContainer extends React.Component {
   state = {}
 
   handlePusherClick = () => {
@@ -176,12 +188,21 @@ class MobileContainer extends Component {
     return (
       <Responsive maxWidth={Responsive.onlyMobile.maxWidth}>
         <Sidebar.Pushable>
-          <Sidebar as={Menu} animation='uncover' inverted vertical visible={sidebarOpened}>
-            <Menu.Item as={Link} to='/' active>Home</Menu.Item>
+          <Sidebar as={Menu} animation='uncover'  vertical visible={sidebarOpened}
+            style={{width: '200px'}}
+          >
+            <Menu.Item as={Link} to='/' >Home</Menu.Item>
             <Menu.Item as={Link} to='/map'>Buy</Menu.Item>
             <Menu.Item as={Link} to='/map'>Sell</Menu.Item>
             <Menu.Item as={Link} to='/map'>Rent</Menu.Item>
-            <Menu.Item as={Link} to='/map'>More</Menu.Item>
+            <Dropdown item text='More'>
+              <Dropdown.Menu style={{position:'initial',
+                marginTop: '10px', borderRadius: '4px'}} >
+                <Dropdown.Item icon='edit' text='Edit Profile' />
+                <Dropdown.Item icon='globe' text='Choose Language' />
+                <Dropdown.Item icon='settings' text='Account Settings' />
+              </Dropdown.Menu>
+            </Dropdown>
             <Menu.Item as={Link} to='/login'>Log in</Menu.Item>
             <Menu.Item as={Link} to='/signup'>Sign Up</Menu.Item>
           </Sidebar>
@@ -215,7 +236,9 @@ class MobileContainer extends Component {
     )
   }
 }
-/* orig, after menu.item close
+/*
+
+orig, after menu.item close
 <Menu.Item position='right'>
   <Button as='a' inverted>
     Log in

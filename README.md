@@ -22,3 +22,4 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 - First house in 'New Listings' on home page - Photo by adriana carles on Unsplash
 - Second house in 'New Listings' on home page - Photo by Gus Ruballo on Unsplash
 - Third house in 'New Listings' on home page - Photo by Scott Webb on Unsplash
+- House pictures on map page are from Flickr

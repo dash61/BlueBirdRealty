@@ -43,3 +43,7 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
 }
+
+.ui.visible.left.sidebar~.pusher {
+  transform: translate3d(200px, 0, 0);
+}

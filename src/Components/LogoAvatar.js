@@ -14,7 +14,7 @@ const LogoAvatar = () => (
         <Image src='/images/logo2a.png'
           className='rounded'
           verticalAlign='middle'
-          style={{ marginRight: '2.5em', marginBottom: '0em', width: '106px' }}
+          style={{ marginBottom: '0em', width: '106px' }}
         />
       </div>
     </Segment>
