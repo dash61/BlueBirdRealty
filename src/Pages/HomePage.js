@@ -3,23 +3,18 @@ import React from 'react'
 import {
   Button,
   Card,
-  //Container,
   Divider,
-  //Form,
   Grid,
   Header,
   Icon,
   Image,
-  //List,
-  //Menu,
-  //Responsive,
+  Input,
+  Modal,
   Radio,
-  //Search,
   Segment,
-  //Sidebar,
-  //Visibility,
 } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
+import { Redirect } from 'react-router';
 import './HomePage.css';
 import faker from 'faker';
 import _ from 'lodash';
@@ -82,16 +77,37 @@ import _ from 'lodash';
 // }
 
 
-
 export default class HomePage extends React.Component
 {
   constructor(props) {
     super(props);
-    this.state = {value: 'buy'}; // default to set radio button
+    this.state = {
+      value: 'buy',    // default to set radio button
+      openModal: false, // default for modal for "Find Out How" btn
+      redirect: false
+    };
+    this.searchTerm = "";
   }
   handleChange = (e, { value }) => this.setState({ value });
   avatar1 = faker.image.avatar();
   avatar2 = faker.image.avatar();
+  showModal = () => this.setState({ openModal: true });
+  closeModal = () => this.setState({ openModal: false });
+  searchTermChanging = (e) => {
+    //console.log("you searched for " + e.target.value);
+    this.searchTerm = e.target.value;
+  }
+  handleSearchKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      console.log("Enter pressed, search for " + this.searchTerm);
+      this.setState({ redirect: true });
+    }
+  }
+  searchNow = (e) => {
+    e.preventDefault();
+    console.log("You clicked search icon, searching for " + this.searchTerm);
+    this.setState({ redirect: true });
+  }
 
     // Generate some data - 3 data pieces for the 3 "new listings" area.
 	addresses = _.times(3, () => {
@@ -107,6 +123,13 @@ export default class HomePage extends React.Component
 
 
   render() {
+    // Handle if search bar action caused redirect to map page
+    if (this.state.redirect) {
+      return <Redirect push to={{pathname: "/map",
+        state: { searchTerm: this.searchTerm,
+          bsr: this.state.value } }} />;
+    }
+
     return (
       <div>
         <div className='search-image' style={{height: '500px',
@@ -125,8 +148,18 @@ export default class HomePage extends React.Component
               <Grid.Row style={{ paddingTop: '1.5em' }}>
                 <div className="ui category search" style={{width: '100%'}}>
                   <div className="ui icon input search-bar" style={{width: '100%'}}>
-                    <input className="prompt" type="text" placeholder="Address, City, Zip, or Neighborhood" />
-                    <i className="search icon"></i>
+                    <Input icon
+                      placeholder="Address, City, Zip, or Neighborhood"
+                      onChange={this.searchTermChanging}
+                      onKeyPress={this.handleSearchKeyPress}
+                      style={{ width: '100%' }}
+                    >
+                    <input style={{ backgroundColor: '#08befb11',
+                      width: '100%', borderRadius: '20px'}}
+                      />
+                    <Icon name='search' link={true} circular={true}
+                      onClick={this.searchNow}/>
+                    </Input>
                   </div>
                 </div>
               </Grid.Row>
@@ -240,7 +273,6 @@ export default class HomePage extends React.Component
 
         <Segment placeholder style={{margin: '6em 2em'}}>
           <Grid rows={2} stackable >
-
             <Grid.Column verticalAlign='middle'>
               <Grid.Row style={{textAlign: 'center', marginTop: '2em',
                 marginBottom: '2.5em'}}>
@@ -262,11 +294,32 @@ export default class HomePage extends React.Component
                 <p as='h5' style={{marginTop: '0'}}>
                   You can get pre-approved for a loan.
                 </p>
-                <Button as={Link} to='/map' primary>Find Out How</Button>
+                <Button onClick={this.showModal} primary>Find Out How</Button>
               </Grid.Row>
             </Grid.Column>
           </Grid>
         </Segment>
+
+        <Modal
+          size={"mini"}
+          open={this.state.openModal}
+          onClose={this.closeModal}
+          style={{ height: "auto" }}
+        >
+          <Modal.Header>Mortgage Information</Modal.Header>
+          <Modal.Content>
+            <p>We have no mortgage information yet.</p>
+          </Modal.Content>
+          <Modal.Actions>
+            <Button
+              positive
+              icon="checkmark"
+              labelPosition="right"
+              content="Ok"
+              onClick={this.closeModal}
+            />
+          </Modal.Actions>
+        </Modal>
 
       </div>
     )

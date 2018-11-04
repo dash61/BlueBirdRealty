@@ -9,7 +9,6 @@ import HomePage from './Pages/HomePage';
 import LoginPage from './Pages/LoginPage';
 import SignUpPage from './Pages/SignUpPage';
 import MapPage from './Pages/MapPage';
-import CalculatorsPage from './Pages/CalculatorsPage';
 import './index.css'; // include this *after* semantic.min.css!
 
 const supportsHistory = 'pushState' in window.history;
@@ -20,7 +19,6 @@ ReactDOM.render(
       <Route exact path="/" component={HomePage} />
       <Route path="/login" component={LoginPage} />
       <Route path="/signup" component={SignUpPage} />
-      <Route path="/calc" component={CalculatorsPage} />
       <Route path="/map" component={MapPage} />
     </NavHdrFtr>
   </BrowserRouter>,

@@ -1,14 +1,12 @@
-import PropTypes from 'prop-types'
-import React from 'react'
+import PropTypes from 'prop-types';
+import React from 'react';
 import {
   Button,
   Container,
-  //Divider,
   Dropdown,
   Grid,
   Header,
   Icon,
-  //Image,
   List,
   Menu,
   Responsive,
@@ -17,37 +15,44 @@ import {
   Visibility,
 } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
+import { Redirect } from 'react-router';
 import LogoAvatar from './LogoAvatar';
-
-
-// class NavHdrFtr extends React.Component {
-//   render() {
-//     return (<h1>NavHdrFtr Page</h1>);
-//   }
-// }
-
-// <Image src='/images/logo4.png'
-//   className='rounded'
-//
-//   floated='left'
-//   style={{ marginLeft: '1em', marginBottom: '0em', width: '96px' }}
-// />
 
 /* Heads up!
  * Neither Semantic UI nor Semantic UI React offer a responsive navbar, however, it can be implemented easily.
  * It can be more complicated, but you can create really flexible markup.
  */
 class DesktopContainer extends React.Component {
-  state = {}
+  constructor(props) {
+    super(props);
+    //console.log("DesktopContainer - props = " + JSON.stringify(props));
+    this.state = {
+      activeItem: '',
+      redirect: false,
+      bsrValue: 'buy'
+    }
+  }
 
   hideFixedMenu = () => this.setState({ fixed: false })
   showFixedMenu = () => this.setState({ fixed: true })
+  handleItemClick = (e, { name }) => {
+    let bsr = (name === 'Buy' ? 'buy' : (name === 'Sell' ? 'sell' : 'rent'));
+    console.log("NavHdr, handleItemClick, bsr=" + bsr);
+    this.setState({ activeItem: name, bsrValue: bsr, redirect: true });
+  }
 
   state = { activeItem: '' }
 
-  handleItemClick = (e, { name }) => this.setState({ activeItem: name })
-
   render() {
+    // Handle if search bar action caused redirect to map page
+    if (this.state.redirect) {
+      console.log("NavHdr, render, redirecting to map");
+      this.setState({ redirect: false }); // reset
+      return <Redirect push to={{pathname: "/map",
+        state: { searchTerm: "",
+          bsr: this.state.bsrValue } }} />;
+    }
+
     const { activeItem } = this.state
     const { children } = this.props
     const { fixed } = this.state
@@ -69,7 +74,7 @@ class DesktopContainer extends React.Component {
             >
             <Segment inverted vertical as={Link} to='/'
               style={{ padding: '0', border: 'none' }}
-              name='Homey'
+              name='Home'
               >
               <LogoAvatar />
             </Segment>
@@ -85,7 +90,7 @@ class DesktopContainer extends React.Component {
                 secondary={!fixed}
                 className='center'
                 size='large'
-                style={{ marginTop: '0em', border: 'none' }}
+                style={{ marginTop: '0em', border: 'none', zIndex: '502' }}
               >
                 <Container style={{ alignItems: 'center'}}>
                   { fixed &&
@@ -98,19 +103,19 @@ class DesktopContainer extends React.Component {
                   }
                   <Menu.Item
                     name='Buy'
-                    as={Link} to='/map'
+                    //as={Link} to='/map'
                     active={activeItem === 'Buy'}
                     onClick={this.handleItemClick}
                   />
                   <Menu.Item
                     name='Sell'
-                    as={Link} to='/map'
+                    //as={Link} to='/map'
                     active={activeItem === 'Sell'}
                     onClick={this.handleItemClick}
                   />
                   <Menu.Item
                     name='Rent'
-                    as={Link} to='/map'
+                    //as={Link} to='/map'
                     active={activeItem === 'Rent'}
                     onClick={this.handleItemClick}
                   />
@@ -171,11 +176,14 @@ DesktopContainer.propTypes = {
 }
 
 class MobileContainer extends React.Component {
-  state = {}
+  constructor(props) {
+    super(props);
+    //console.log("MobileContainer - props = " + JSON.stringify(props));
+    this.state = {}
+  }
 
   handlePusherClick = () => {
     const { sidebarOpened } = this.state
-
     if (sidebarOpened) this.setState({ sidebarOpened: false })
   }
 
@@ -192,9 +200,9 @@ class MobileContainer extends React.Component {
             style={{width: '200px'}}
           >
             <Menu.Item as={Link} to='/' >Home</Menu.Item>
-            <Menu.Item as={Link} to='/map'>Buy</Menu.Item>
-            <Menu.Item as={Link} to='/map'>Sell</Menu.Item>
-            <Menu.Item as={Link} to='/map'>Rent</Menu.Item>
+            <Menu.Item as={Link} itemname='buy' to='/map'>Buy</Menu.Item>
+            <Menu.Item as={Link} itemname='sell' to='/map'>Sell</Menu.Item>
+            <Menu.Item as={Link} itemname='rent' to='/map'>Rent</Menu.Item>
             <Dropdown item text='More'>
               <Dropdown.Menu style={{position:'initial',
                 marginTop: '10px', borderRadius: '4px'}} >
@@ -258,70 +266,7 @@ const NavHdrFtr = ({ children }) => (
   <div>
     <DesktopContainer>{children}</DesktopContainer>
     <MobileContainer>{children}</MobileContainer>
-    <Segment inverted vertical
-      style={{ padding: '2em 0em', bottom: '0px', right: '0px',
-        position: 'absolute', width: '100%',
-        backgroundColor: 'rgba(0,0,86,1.0)' }}>
-      <Container>
-        <Grid divided inverted stackable>
-          <Grid.Row>
-            <Grid.Column width={3}>
-              <Header inverted as='h4' content='About' />
-              <List link inverted>
-                <List.Item as='a'>Sitemap</List.Item>
-                <List.Item as='a'>Privacy</List.Item>
-                <List.Item as='a'>Terms & Conditions</List.Item>
-                <List.Item as='a'>DMCA Notice</List.Item>
-              </List>
-            </Grid.Column>
-            <Grid.Column width={3}>
-              <Header inverted as='h4' content='Services' />
-              <List link inverted>
-                <List.Item as='a'>Mortage Rates</List.Item>
-                <List.Item as='a'>Mobile App</List.Item>
-                <List.Item as='a'>Data Science</List.Item>
-                <List.Item as='a'>Agent Search</List.Item>
-              </List>
-            </Grid.Column>
-            <Grid.Column width={3}>
-            <Header inverted as='h4' content='Help' />
-            <List link inverted>
-              <List.Item as='a'>Feedback</List.Item>
-              <List.Item as='a'>Contact Us</List.Item>
-              <List.Item as='a'>About Us</List.Item>
-              <List.Item as='a'>Careers</List.Item>
-            </List>
-            </Grid.Column>
-            <Grid.Column width={7}>
-            <Header inverted as='h4' content='Social' />
-            <div link="true" inverted="true">
-              <a className='item' rel="noreferrer noopener" href='https://facebook.com' target='_blank'>
-                <Icon link circular inverted color='blue' name='facebook f'  />
-              </a>
-              <a className='item' rel="noreferrer noopener" href='https://twitter.com' target='_blank'>
-                <Icon link circular inverted color='blue' name='twitter' />
-              </a>
-              <a className='item' rel="noreferrer noopener" href='https://googleplus.com' target='_blank'>
-                <Icon link circular inverted color='blue' name='google plus g' />
-              </a>
-              <a className='item' rel="noreferrer noopener" href='https://linkedin.com' target='_blank'>
-                <Icon link circular inverted color='blue' name='linkedin' />
-              </a>
-              <a className='item' rel="noreferrer noopener" href='https://instagram.com' target='_blank'>
-                <Icon link circular inverted color='blue' name='instagram' />
-              </a>
-              <a className='item' rel="noreferrer noopener" href='https://pinterest.com' target='_blank'>
-                <Icon link circular inverted color='blue' name='pinterest p' />
-              </a>
-              <a className='item' rel="noreferrer noopener" href='https://youtube.com' target='_blank'>
-                <Icon link circular inverted color='blue' name='youtube' />
-              </a>
-            </div>
-            </Grid.Column>
-          </Grid.Row>
-        </Grid>
-      </Container>
-    </Segment>
+    <Footer></Footer>
   </div>
 )
 
@@ -329,12 +274,78 @@ NavHdrFtr.propTypes = {
   children: PropTypes.node,
 }
 
+const Footer = () => (
+  <Segment inverted vertical
+    style={{ padding: '2em 0em', bottom: '0px', right: '0px',
+      position: 'absolute', width: '100%',
+      backgroundColor: 'rgba(0,0,86,1.0)' }}>
+    <Container>
+      <Grid divided inverted stackable>
+        <Grid.Row>
+          <Grid.Column width={3}>
+            <Header inverted as='h4' content='About' />
+            <List link inverted>
+              <List.Item as='a'>Sitemap</List.Item>
+              <List.Item as='a'>Privacy</List.Item>
+              <List.Item as='a'>Terms & Conditions</List.Item>
+              <List.Item as='a'>DMCA Notice</List.Item>
+            </List>
+          </Grid.Column>
+          <Grid.Column width={3}>
+            <Header inverted as='h4' content='Services' />
+            <List link inverted>
+              <List.Item as='a'>Mortage Rates</List.Item>
+              <List.Item as='a'>Mobile App</List.Item>
+              <List.Item as='a'>Data Science</List.Item>
+              <List.Item as='a'>Agent Search</List.Item>
+            </List>
+          </Grid.Column>
+          <Grid.Column width={3}>
+          <Header inverted as='h4' content='Help' />
+          <List link inverted>
+            <List.Item as='a'>Feedback</List.Item>
+            <List.Item as='a'>Contact Us</List.Item>
+            <List.Item as='a'>About Us</List.Item>
+            <List.Item as='a'>Careers</List.Item>
+          </List>
+          </Grid.Column>
+          <Grid.Column width={7}>
+          <Header inverted as='h4' content='Social' />
+          <div link="true" inverted="true">
+            <a className='item' rel="noreferrer noopener" href='https://facebook.com' target='_blank'>
+              <Icon link circular inverted color='blue' name='facebook f'  />
+            </a>
+            <a className='item' rel="noreferrer noopener" href='https://twitter.com' target='_blank'>
+              <Icon link circular inverted color='blue' name='twitter' />
+            </a>
+            <a className='item' rel="noreferrer noopener" href='https://googleplus.com' target='_blank'>
+              <Icon link circular inverted color='blue' name='google plus g' />
+            </a>
+            <a className='item' rel="noreferrer noopener" href='https://linkedin.com' target='_blank'>
+              <Icon link circular inverted color='blue' name='linkedin' />
+            </a>
+            <a className='item' rel="noreferrer noopener" href='https://instagram.com' target='_blank'>
+              <Icon link circular inverted color='blue' name='instagram' />
+            </a>
+            <a className='item' rel="noreferrer noopener" href='https://pinterest.com' target='_blank'>
+              <Icon link circular inverted color='blue' name='pinterest p' />
+            </a>
+            <a className='item' rel="noreferrer noopener" href='https://youtube.com' target='_blank'>
+              <Icon link circular inverted color='blue' name='youtube' />
+            </a>
+          </div>
+          </Grid.Column>
+        </Grid.Row>
+      </Grid>
+    </Container>
+  </Segment>
+)
+
+
 export default NavHdrFtr;
 
-/* Notes:
-Using rel="noreferrer noopener" on 'a' links above (when using
+/* Note:
+I'm using rel="noreferrer noopener" on 'a' links above (when using
 target='_blank') in order to avoid security issues; see
 https://html.spec.whatwg.org/multipage/links.html#link-type-noopener.
-
-
 */
