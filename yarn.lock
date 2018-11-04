@@ -1141,7 +1141,7 @@ ajv@^5.3.0:
     fast-json-stable-stringify "^2.0.0"
     json-schema-traverse "^0.3.0"
 
-ajv@^6.0.1, ajv@^6.1.0, ajv@^6.5.3, ajv@^6.5.4:
+ajv@^6.0.1, ajv@^6.1.0, ajv@^6.5.3:
   version "6.5.4"
   resolved "https://registry.yarnpkg.com/ajv/-/ajv-6.5.4.tgz#247d5274110db653706b550fcc2b797ca28cfc59"
   integrity sha512-4Wyjt8+t6YszqaXnLDfMmG/8AlO5Zbcsy3ATHncCzjW/NoPzAId8AK6749Ybjmdt+kUY1gP60fCu46oDxPv/mg==
@@ -6908,12 +6908,25 @@ leaflet-dvf@^0.3.1:
   resolved "https://registry.yarnpkg.com/leaflet-dvf/-/leaflet-dvf-0.3.1.tgz#be4989b9f49beb4725aa4dc1329d4211f136c838"
   integrity sha1-vkmJufSb60clqk3BMp1CEfE2yDg=
 
+leaflet-geosearch@^2.7.0:
+  version "2.7.0"
+  resolved "https://registry.yarnpkg.com/leaflet-geosearch/-/leaflet-geosearch-2.7.0.tgz#0f7b319486ea344b00639b84b338b4087bf6b839"
+  integrity sha512-6rZIZ5mp9Ifp3R37DKe7ipHV6/qnUY5kP1gNDz3oMT4hp5FqKyB2V4enoTDT1iziE8yrn0hy/OP9oI4HG1dKEw==
+  dependencies:
+    lodash.debounce "^4.0.8"
+    nodent-runtime "^3.0.4"
+
 leaflet-virtual-grid@^1.0.7:
   version "1.0.7"
   resolved "https://registry.yarnpkg.com/leaflet-virtual-grid/-/leaflet-virtual-grid-1.0.7.tgz#0dbb0dacd506b6e6d291314da5022d348729f8ad"
   integrity sha512-sJxWYPcIKwMTewE+z8OFzfZHsbZcniQgTcreVdIQnxSRf+1XpMp+c4QKAWRKTBRmWOhEGyQO0Z90CLANJ9jRUQ==
   dependencies:
     leaflet "^1.0.0"
+
+leaflet.markercluster@^1.4.1:
+  version "1.4.1"
+  resolved "https://registry.yarnpkg.com/leaflet.markercluster/-/leaflet.markercluster-1.4.1.tgz#b53f2c4f2ca7306ddab1dbb6f1861d5e8aa6c5e5"
+  integrity sha512-ZSEpE/EFApR0bJ1w/dUGwTSUvWlpalKqIzkaYdYB7jaftQA/Y2Jav+eT4CMtEYFj+ZK4mswP13Q2acnPBnhGOw==
 
 leaflet@^1.0.0, leaflet@^1.3.4:
   version "1.3.4"
@@ -7889,6 +7902,11 @@ node.extend@^2.0.0:
   integrity sha1-dSWih1Z36lNHhKXhCseJVhOWFN8=
   dependencies:
     is "^3.2.1"
+
+nodent-runtime@^3.0.4:
+  version "3.2.1"
+  resolved "https://registry.yarnpkg.com/nodent-runtime/-/nodent-runtime-3.2.1.tgz#9e2755d85e39f764288f0d4752ebcfe3e541e00e"
+  integrity sha512-7Ws63oC+215smeKJQCxzrK21VFVlCFBkwl0MOObt0HOpVQXs3u483sAmtkF33nNqZ5rSOQjB76fgyPBmAUrtCA==
 
 nopt@^4.0.1, nopt@~4.0.1:
   version "4.0.1"
@@ -10306,10 +10324,10 @@ semantic-ui-react@^0.83.0:
     prop-types "^15.6.2"
     shallowequal "^1.1.0"
 
-semantic-ui@^2.4.1:
-  version "2.4.1"
-  resolved "https://registry.yarnpkg.com/semantic-ui/-/semantic-ui-2.4.1.tgz#a0e518664c7c6d77c4709351052c34cb237a91fd"
-  integrity sha512-bs+oCzEFRapGx3eDSBtGBX/gIQOkwPoO+keyB3uojcu5ZmCM8UlbSoJUCdLz/+jQsgl7cZMuPrWGrM4QeBgrvQ==
+semantic-ui@^2.4.2:
+  version "2.4.2"
+  resolved "https://registry.yarnpkg.com/semantic-ui/-/semantic-ui-2.4.2.tgz#9187dc0918cf0149a6356466a520142bb1217248"
+  integrity sha512-Nr7LDK/MbIM1Imxiktqhz9KOUCUz00rgxEkHb0xZvQUscK0z73SByrF9LYZaat0DQQA1u2dxj0EtEU7xWRu+zg==
   dependencies:
     better-console "*"
     del "^3.0.0"
