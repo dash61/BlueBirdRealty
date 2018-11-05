@@ -19,8 +19,8 @@ class MapPage extends React.Component {
     this.priceMin = 0;
     this.bedsMin = 0;
     this.bathsMin = 0;
-    this.yearMin = 0;//YEARMIN;
-    this.yearMax = 0;//YEARMAX;
+    this.yearMin = YEARMIN;
+    this.yearMax = YEARMAX;
     this.sqftMin = SQFTMIN;
     this.sqftMax = SQFTMAX;
     this.prevYearMin = 0;

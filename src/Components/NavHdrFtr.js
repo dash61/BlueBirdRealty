@@ -25,7 +25,7 @@ import LogoAvatar from './LogoAvatar';
 class DesktopContainer extends React.Component {
   constructor(props) {
     super(props);
-    //console.log("DesktopContainer - props = " + JSON.stringify(props));
+    console.log("DesktopContainer - props = " + JSON.stringify(props));
     this.state = {
       activeItem: '',
       redirect: false,
@@ -37,8 +37,11 @@ class DesktopContainer extends React.Component {
   showFixedMenu = () => this.setState({ fixed: true })
   handleItemClick = (e, { name }) => {
     let bsr = (name === 'Buy' ? 'buy' : (name === 'Sell' ? 'sell' : 'rent'));
-    console.log("NavHdr, handleItemClick, bsr=" + bsr);
-    this.setState({ activeItem: name, bsrValue: bsr, redirect: true });
+    let redirectMe = false;
+    if (name === 'Buy' || name === 'Rent' || name === 'Sell') // TODO - redirect to diff page
+      redirectMe = true;
+    console.log("NavHdr, handleItemClick, bsr=", bsr, ", name=", name);
+    this.setState({ activeItem: name, bsrValue: bsr, redirect: redirectMe });
   }
 
   state = { activeItem: '' }
@@ -103,7 +106,7 @@ class DesktopContainer extends React.Component {
                   }
                   <Menu.Item
                     name='Buy'
-                    //as={Link} to='/map'
+                    as={Link} to='/map'
                     active={activeItem === 'Buy'}
                     onClick={this.handleItemClick}
                   />
@@ -115,12 +118,12 @@ class DesktopContainer extends React.Component {
                   />
                   <Menu.Item
                     name='Rent'
-                    //as={Link} to='/map'
+                    as={Link} to='/map'
                     active={activeItem === 'Rent'}
                     onClick={this.handleItemClick}
                   />
                   <Dropdown item text='More'>
-                    <Dropdown.Menu style={{zIndex: 500}}>
+                    <Dropdown.Menu style={{zIndex: 1102}}>
                       <Dropdown.Item icon='calculator' text='Calculators' />
                       <Dropdown.Item icon='edit' text='Edit Profile' />
                       <Dropdown.Item icon='globe' text='Choose Language' />
