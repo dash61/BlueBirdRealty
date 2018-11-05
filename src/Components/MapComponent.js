@@ -267,7 +267,7 @@ provide for sizing control (m=small, 240px on longest side). Experiment with the
         let popup = '<img style="width:280px" src=' + data.image + '/>' +
          '<br/><b>$ ' + data.price + priceExtra +
           data.beds + bedsText + data.baths + bathsText +
-          data.sqft + ' sq. ft.<br/>' +
+          data.sqft + ' sq. ft., built ' + data.yearBuilt + '<br/>' +
           data.streetAddr + ', ' + data.city + ', ' + data.state +
           ' ' + zipStr + '<br/>Agent: ' + data.name;
         markerArray.push (L.marker([data.lat, data.lng],
@@ -394,6 +394,7 @@ provide for sizing control (m=small, 240px on longest side). Experiment with the
           zoom={config.params.zoom}
           maxZoom={config.params.maxZoom}
           minZoom={config.params.minZoom}
+          style={{ borderRadius: '6px'}}
         />
       </div>
     );

@@ -1,10 +1,14 @@
 import React from "react";
+import {
+  Container,
+} from 'semantic-ui-react';
 import MapComponent from '../Components/MapComponent';
 import Filter from '../Components/Filter';
 import faker from 'faker';
 import _ from 'lodash';
 import zipCodeData from './mapData.json';
 import houseImages from './houseImages.json'; // an array of url strings
+import { YEARMIN, YEARMAX, SQFTMIN, SQFTMAX } from '../Components/Constants';
 
 
 class MapPage extends React.Component {
@@ -15,10 +19,16 @@ class MapPage extends React.Component {
     this.priceMin = 0;
     this.bedsMin = 0;
     this.bathsMin = 0;
-    this.yearMin = 1935;
-    this.yearMax = 2018;
-    this.sqftMin = 1000;
-    this.sqftMax = 4000;
+    this.yearMin = 0;//YEARMIN;
+    this.yearMax = 0;//YEARMAX;
+    this.sqftMin = SQFTMIN;
+    this.sqftMax = SQFTMAX;
+    this.prevYearMin = 0;
+    this.prevYearMax = 0;
+    this.minYearOk = false;
+    this.maxYearOk = false;
+    this.minSqftOk = false;
+    this.maxSqftOk = false;
     this.filterObj = {}; // for use in filtering map data
     //this.fakeDataFiltered = [];
     this.state = {
@@ -55,7 +65,7 @@ class MapPage extends React.Component {
         name: faker.name.firstName() + ' ' + faker.name.lastName(),
         zip: zipCodeData['items'][i]['zip'],
         streetAddr: faker.address.streetAddress(),
-        sqft: Math.floor(1000 + Math.random() * 4001), // 1000 min, 4000 max
+        sqft: Math.floor(SQFTMIN + Math.random() * 4001), // 1000 min, 4000 max
         beds: Math.floor(1 + Math.random() * 5), // 1 min, 5 max
         baths: Math.floor(1 + Math.random() * 4), // 1 min, 4 max
         price: (this.bsr === 'buy' ?
@@ -66,7 +76,7 @@ class MapPage extends React.Component {
         city: zipCodeData['items'][i]['city'],
         state: zipCodeData['items'][i]['abbr'],
         image: houseImages['items'][Math.floor(0 + Math.random() * 282)], // 281 images
-        yearBuilt: Math.floor(1935 + Math.random() * 84) // 1935 min, 2018 max
+        yearBuilt: Math.floor(YEARMIN + Math.random() * 84) // 1935 min, 2018 max
         /* Need this data: name (ie, name of seller), street, suite, city,
            state, zip, lat, long.
            Ignore city from faker; instead use geonames lookup below to turn
@@ -122,6 +132,8 @@ class MapPage extends React.Component {
       if (obj.baths < this.bathsMin)
         return false;
     }
+    if (obj.yearBuilt < this.yearMin || obj.yearBuilt > this.yearMax)
+      return false;
     // for (const key of Object.keys(obj)){
     //   console.log("filterTheData - key = " + key + ", value = " + obj[key].toString());
     // }
@@ -136,8 +148,13 @@ class MapPage extends React.Component {
 
   onFilterChange = async (obj) => {
     this.filterObj = obj;
+    let okToFilter = true;
+    let checkYear = false;
+    let checkSqft = false;
+    let savedKey = '';
+
     for (const key of Object.keys(obj)) {
-      //console.log("onFilterChange - key = " + key + ", value = " + obj[key].toString());
+      console.log("onFilterChange - key = " + key + ", value = " + obj[key].toString());
       switch (key)
       {
         case 'price':
@@ -177,10 +194,143 @@ class MapPage extends React.Component {
           //console.log("onFilterChange - bathsMin = " + this.bathsMin.toString());
           break;
 
+        case 'yearMin':
+          this.yearMin = parseInt(obj[key]);
+          checkYear = true;
+          savedKey = key; // key track of which item user was just editing
+          break;
+
+        case 'yearMax':
+          this.yearMax = parseInt(obj[key]);
+          checkYear = true;
+          savedKey = key; // key track of which item user was just editing
+          break;
+
         default:
           console.log("onFilterChange - default, key=" + key);
       }
     }
+    console.log("checkYear=", checkYear, ", yearMin=", this.yearMin,
+      ", yearMax=", this.yearMax);
+
+    if (checkYear) {
+      // Check if year being typed is valid.
+      this.minYearOk = true; // reset
+      this.maxYearOk = true; // ditto
+      let newYearMinValid = (this.yearMin >= YEARMIN && this.yearMin <=YEARMAX);
+      let newYearMaxValid = (this.yearMax >= YEARMIN && this.yearMax <=YEARMAX);
+      let prevYearMinValid = (this.prevYearMin >= YEARMIN && this.prevYearMin <=YEARMAX);
+      let prevYearMaxValid = (this.prevYearMax >= YEARMIN && this.prevYearMax <=YEARMAX);
+      if (newYearMinValid && newYearMaxValid) {
+        if (this.yearMin > this.yearMax) {
+          if (savedKey === 'yearMin') // user was typing in year min box
+            newYearMinValid = false;
+          else if (savedKey === 'yearMax')
+            newYearMaxValid = false;
+        }
+      }
+      console.log("mappage - ", newYearMinValid, newYearMaxValid, prevYearMinValid,
+        prevYearMaxValid);
+      console.log("mappage - ", this.yearMin, this.yearMax, this.prevYearMin,
+        this.prevYearMax);
+      this.minYearOk = newYearMinValid;
+      this.maxYearOk = newYearMaxValid;
+
+      /*
+      1 - don't filter if value changes from implied to invalid
+      2 - don't filter if value changes from invalid to invalid
+      3 - don't filter if value changes from empty to invalid
+      4 - don't filter if value changes from invalid to implied
+      5 - don't filter if value changes from invalid to valid BUT min>max
+      6 - don't filter if value changes from valid to invalid BUT min>max when valid
+      */
+      if (savedKey === 'yearMin') {
+        if (this.prevYearMin === YEARMIN && newYearMinValid === false)
+          okToFilter = false;
+        else if (prevYearMinValid === false && newYearMinValid === false)
+          okToFilter = false;
+        else if (this.prevYearMin === 0 && newYearMinValid === false)
+          okToFilter = false;
+        else if (prevYearMinValid === false && newYearMinValid === YEARMIN)
+          okToFilter = false;
+        else if (prevYearMinValid === false && newYearMinValid === true) {
+          if (this.yearMin > this.yearMax) {
+            okToFilter = false;
+          }
+        }
+        else if (prevYearMinValid === true && newYearMinValid === false) {
+          if (this.prevYearMin > this.yearMax) {
+            okToFilter = false;
+          }
+        }
+      }
+
+      if (savedKey === 'yearMax') {
+        if (this.prevYearMax === YEARMIN && newYearMaxValid === false)
+          okToFilter = false;
+        else if (prevYearMaxValid === false && newYearMaxValid === false)
+          okToFilter = false;
+        else if (this.prevYearMax === 0 && newYearMaxValid === false)
+          okToFilter = false;
+        else if (prevYearMaxValid === false && newYearMaxValid === YEARMIN)
+          okToFilter = false;
+        else if (prevYearMaxValid === false && newYearMaxValid === true) {
+          if (this.yearMin > this.yearMax) {
+            okToFilter = false;
+          }
+        }
+        else if (prevYearMaxValid === true && newYearMaxValid === false) {
+          if (this.yearMin > this.prevYearMax) {
+            okToFilter = false;
+          }
+        }
+      }
+
+      // At end of everything:
+      if (savedKey === 'yearMin')
+        this.prevYearMin = this.yearMin; // save for next go-around
+      if (savedKey === 'yearMax')
+        this.prevYearMax = this.yearMax; // save for next go-around
+
+      // // If user is changing year min and it went from valid to invalid, refilter.
+      // if (savedKey == 'yearMin' && !newYearMinValid && !this.prevYearMinValid) {
+      //   okToFilter = false;
+      // } not true if prevyear was the default min, and valid???
+      // false if : was valid, now invalid
+      //
+      //
+      // // If user is changing year min and it went from valid to invalid, refilter.
+      // if (savedKey == 'yearMin' && !newYearMinValid && this.prevYearMinValid) {
+      //   okToFilter = true;
+      //   this.prevYearMinValid = false;
+      // }
+      // // If user is changing year min and it went from invalid to valid, refilter.
+      // if (savedKey == 'yearMin' && newYearMinValid && !this.prevYearMinValid) {
+      //   okToFilter = true;
+      //   this.prevYearMinValid = true;
+      // }
+      //
+      // // If user is changing year max and it went from valid to invalid, refilter.
+      // if (savedKey == 'yearMax' && !newYearMaxValid && this.prevYearMaxValid) {
+      //   okToFilter = true;
+      //   this.prevYearMaxValid = false;
+      // }
+      // // If user is changing year max and it went from invalid to valid, refilter.
+      // if (savedKey == 'yearMax' && newYearMaxValid && !this.prevYearMaxValid) {
+      //   okToFilter = true;
+      //   this.prevYearMaxValid = true;
+      // }
+
+      // if (this.yearMinValid )
+      // if (this.yearMin <= this.yearMax) {
+      //   if (this.yearMin >= YEARMIN) {
+      //     if (this.yearMax <= YEARMAX) {
+      //       okToFilter = true;
+      //     }
+      //   }
+      // }
+    }
+
     //console.log("Filter, onFilterChange - got obj=" + JSON.stringify(obj));
     // this.fakeDataFiltered = this.fakeData.filter(this.filterTheData);
     // this.setState((prevState, currentProps) => {
@@ -191,32 +341,36 @@ class MapPage extends React.Component {
     // this.setState((prevState, currentProps) => {
     //     return { ...prevState, fakeDataFiltered: [...tempNewFakeData] };
     // });
-    this.setState((prevState, currentProps) => {
-        return { ...prevState, fakeDataFiltered: [...this.fakeData.filter(this.filterTheData)] };
-    });
-
-    // this.setState(prevState => ({
-    //   fakeDataFiltered: [...this.fakeData.filter(this.filterTheData)]
-    // }));
-
-    //this.fakeDataFiltered = this.fakeData.filter(this.filterTheData);
+    if (okToFilter) {
+      console.log("Ok to filter is true");
+      this.setState((prevState, currentProps) => {
+          return { ...prevState, fakeDataFiltered: [...this.fakeData.filter(this.filterTheData)] };
+      });
+    }
   }
 
   // Make this function pure and never update state here.
   render() {
-    if (this.state.fakeDataFiltered.length > 0) // if we have data to show
-    {
-      //console.log("MapPage - rendering filter and map");
-      return (
-        <div>
-          <Filter {...this.props} onFilterChange={this.onFilterChange} />
+    console.log("MapPage - rendering filter and map, minYearOk=", this.minYearOk);
+    return (
+      <div>
+        <Filter
+          {...this.props}
+          onFilterChange={this.onFilterChange}
+          minYearColor={this.minYearOk}
+          maxYearColor={this.maxYearOk}
+          minSqftColor={this.minSqftOk}
+          maxSqftColor={this.maxSqftOk}
+        />
+        <Container style={{ width: '95%', marginBottom: '20px'}}>
           <MapComponent
             {...this.props}
             fakeData={this.state.fakeDataFiltered}
-            fakeDataUpdated={true}/>
-        </div>
-      );
-    }
+            fakeDataUpdated={true}
+          />
+        </Container>
+      </div>
+    );
   }
 }
 

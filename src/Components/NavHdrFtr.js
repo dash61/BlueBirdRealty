@@ -90,7 +90,7 @@ class DesktopContainer extends React.Component {
                 secondary={!fixed}
                 className='center'
                 size='large'
-                style={{ marginTop: '0em', border: 'none', zIndex: '502' }}
+                style={{ marginTop: '0em', border: 'none', zIndex: '1102' }}
               >
                 <Container style={{ alignItems: 'center'}}>
                   { fixed &&
