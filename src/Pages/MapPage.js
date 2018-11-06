@@ -14,19 +14,23 @@ import { YEARMIN, YEARMAX, SQFTMIN, SQFTMAX } from '../Components/Constants';
 class MapPage extends React.Component {
   constructor(props) {
     super(props);
-    console.log("MapPage - props=", props); // loadLayerData is passed; call this to update the store (during init, and later)
+    console.log("MapPage - ctor props=", props); // loadLayerData is passed; call this to update the store (during init, and later)
     this.fakeData = {};
     this.priceMin = 0;
     this.bedsMin = 0;
     this.bathsMin = 0;
-    this.yearMin = YEARMIN;
-    this.yearMax = YEARMAX;
+    this.yearMin = YEARMIN; // altered value typed in; could be replaced w/ YEARMIN
+    this.yearMax = YEARMAX; // ditto-ish
+    this.yearMinReal = 0;   // real values typed in
+    this.yearMaxReal = 0;   // ditto
     this.sqftMin = SQFTMIN;
     this.sqftMax = SQFTMAX;
-    this.prevYearMin = 0;
-    this.prevYearMax = 0;
-    this.minYearOk = false;
-    this.maxYearOk = false;
+    this.minYearColor = 'red';
+    this.maxYearColor = 'red';
+    this.prevMinMode = 0;
+    this.prevMaxMode = 0;
+    this.prevMinYearColor = 'red';
+    this.prevMaxYearColor = 'red';
     this.minSqftOk = false;
     this.maxSqftOk = false;
     this.filterObj = {}; // for use in filtering map data
@@ -34,6 +38,7 @@ class MapPage extends React.Component {
     this.state = {
       //fakeDataUpdated: false,
       fakeDataFiltered: [],
+      updateFilter: false
     }
 
     if (props.location && props.location.state && props.location.state.bsr)
@@ -53,7 +58,11 @@ class MapPage extends React.Component {
     // code to run when the component receives new props or state
     //console.log ("cdu - MapPage");
     //console.log (prevProps);
-    //console.log (prevState);
+    console.log ("MapPage - cdu - prevState=", prevState);
+    // if (prevState.updateFilter === true && this.state.updateFilter === true)
+    // {
+    //   this.setState ({ updateFilter: false });
+    // }
     //console.log (this.state);
   }
 
@@ -148,13 +157,16 @@ class MapPage extends React.Component {
 
   onFilterChange = async (obj) => {
     this.filterObj = obj;
-    let okToFilter = true;
+    let okToFilter = false;
     let checkYear = false;
     let checkSqft = false;
     let savedKey = '';
+    let minMode = 0; // ie, the state of the state machine
+    let maxMode = 0; // ie, the state of the state machine
+
 
     for (const key of Object.keys(obj)) {
-      console.log("onFilterChange - key = " + key + ", value = " + obj[key].toString());
+      console.log("onFilterChg - key = " + key + ", value =", obj[key]);
       switch (key)
       {
         case 'price':
@@ -207,128 +219,156 @@ class MapPage extends React.Component {
           break;
 
         default:
-          console.log("onFilterChange - default, key=" + key);
+          console.log("onFilterChg - default, key=" + key);
       }
     }
-    console.log("checkYear=", checkYear, ", yearMin=", this.yearMin,
+    console.log("onFilterChg - checkYear=", checkYear, ", yearMin=", this.yearMin,
       ", yearMax=", this.yearMax);
 
     if (checkYear) {
-      // Check if year being typed is valid.
-      this.minYearOk = true; // reset
-      this.maxYearOk = true; // ditto
-      let newYearMinValid = (this.yearMin >= YEARMIN && this.yearMin <=YEARMAX);
-      let newYearMaxValid = (this.yearMax >= YEARMIN && this.yearMax <=YEARMAX);
-      let prevYearMinValid = (this.prevYearMin >= YEARMIN && this.prevYearMin <=YEARMAX);
-      let prevYearMaxValid = (this.prevYearMax >= YEARMIN && this.prevYearMax <=YEARMAX);
-      if (newYearMinValid && newYearMaxValid) {
-        if (this.yearMin > this.yearMax) {
-          if (savedKey === 'yearMin') // user was typing in year min box
-            newYearMinValid = false;
-          else if (savedKey === 'yearMax')
-            newYearMaxValid = false;
-        }
-      }
-      console.log("mappage - ", newYearMinValid, newYearMaxValid, prevYearMinValid,
-        prevYearMaxValid);
-      console.log("mappage - ", this.yearMin, this.yearMax, this.prevYearMin,
-        this.prevYearMax);
-      this.minYearOk = newYearMinValid;
-      this.maxYearOk = newYearMaxValid;
+      console.log("onFilterChg - 1 minMode=", minMode, ", prevMinMode=",
+        this.prevMinMode, ", maxMode=", maxMode,
+        ", prevMaxMode=", this.prevMaxMode);
 
-      /*
-      1 - don't filter if value changes from implied to invalid
-      2 - don't filter if value changes from invalid to invalid
-      3 - don't filter if value changes from empty to invalid
-      4 - don't filter if value changes from invalid to implied
-      5 - don't filter if value changes from invalid to valid BUT min>max
-      6 - don't filter if value changes from valid to invalid BUT min>max when valid
+      /* implied values: 1935 for min, 2018 for max (ie, the limits)
+      State 1 - 0-3 digits, red, invalid, val = implied value
+      State 2 - 4 digits, red, invalid, out of range of min,max
+      State 3 - 4 digits, red, valid but min > max
+      State 4 - 4 digits, black, val = implied value
+      State 5 - 4 digits, black, render, val != implied value
+      Backspacing when 4 digits causes transition back to state 1.
+      Transitioning from state 5 to state 1 causes render.
       */
-      if (savedKey === 'yearMin') {
-        if (this.prevYearMin === YEARMIN && newYearMinValid === false)
-          okToFilter = false;
-        else if (prevYearMinValid === false && newYearMinValid === false)
-          okToFilter = false;
-        else if (this.prevYearMin === 0 && newYearMinValid === false)
-          okToFilter = false;
-        else if (prevYearMinValid === false && newYearMinValid === YEARMIN)
-          okToFilter = false;
-        else if (prevYearMinValid === false && newYearMinValid === true) {
-          if (this.yearMin > this.yearMax) {
-            okToFilter = false;
-          }
-        }
-        else if (prevYearMinValid === true && newYearMinValid === false) {
-          if (this.prevYearMin > this.yearMax) {
-            okToFilter = false;
-          }
-        }
-      }
-
-      if (savedKey === 'yearMax') {
-        if (this.prevYearMax === YEARMIN && newYearMaxValid === false)
-          okToFilter = false;
-        else if (prevYearMaxValid === false && newYearMaxValid === false)
-          okToFilter = false;
-        else if (this.prevYearMax === 0 && newYearMaxValid === false)
-          okToFilter = false;
-        else if (prevYearMaxValid === false && newYearMaxValid === YEARMIN)
-          okToFilter = false;
-        else if (prevYearMaxValid === false && newYearMaxValid === true) {
-          if (this.yearMin > this.yearMax) {
-            okToFilter = false;
-          }
-        }
-        else if (prevYearMaxValid === true && newYearMaxValid === false) {
-          if (this.yearMin > this.prevYearMax) {
-            okToFilter = false;
-          }
-        }
-      }
-
-      // At end of everything:
+      // Check if year being typed is valid.
+      let newYearMinValid = (this.yearMin >= YEARMIN && this.yearMin <= YEARMAX);
+      let newYearMaxValid = (this.yearMax >= YEARMIN && this.yearMax <= YEARMAX);
       if (savedKey === 'yearMin')
-        this.prevYearMin = this.yearMin; // save for next go-around
-      if (savedKey === 'yearMax')
-        this.prevYearMax = this.yearMax; // save for next go-around
+      {
+        maxMode = this.prevMaxMode;
+        if (this.yearMin < 1000)
+        {
+          if (this.prevMinMode === 4)
+          {
+            this.yearMinReal = this.yearMin;
+            this.yearMin = YEARMIN;
+            okToFilter = true;
+          }
+        }
+        else  // min year has 4 digits or more
+        {
+          if (newYearMinValid)
+          {
+            if (newYearMaxValid)
+            {
+              if (this.yearMin <= this.yearMax)
+              {
+                if (this.yearMin === YEARMIN)
+                {
+                  minMode = 3;
+                }
+                else
+                {
+                  minMode = 4;
+                  okToFilter = true;
+                  if (this.yearMin <= this.yearMaxReal)
+                  {
+                    maxMode = 4;
+                  }
+                }
+              }
+            }
+            else // max is not in range
+            {
+              if (this.yearMin === YEARMIN)
+              {
+                minMode = 3;
+              }
+              else
+              {
+                minMode = 4;
+                okToFilter = true;
+              }
+            }
+          }
+        }
+      }
+      else if (savedKey === 'yearMax')
+      {
+        minMode = this.prevMinMode;
+        if (this.yearMax < 1000)
+        {
+          if (this.prevMaxMode === 4)
+          {
+            this.yearMaxReal = this.yearMax;
+            this.yearMax = YEARMAX;
+            okToFilter = true;
+          }
+        }
+        else
+        {
+          if (newYearMaxValid)
+          {
+            if (newYearMinValid)
+            {
+              if (this.yearMin <= this.yearMax)
+              {
+                if (this.yearMax === YEARMAX)
+                {
+                  maxMode = 3;
+                }
+                else if (this.yearMax !== YEARMAX)
+                {
+                  maxMode = 4;
+                  okToFilter = true;
+                  if ((this.yearMinReal >= YEARMIN) && (this.yearMinReal <= this.yearMax))
+                  {
+                    minMode = 4;
+                  }
+                }
+              }
+            }
+            else // min is not in range
+            {
+              if (this.yearMax === YEARMAX)
+              {
+                maxMode = 3;
+              }
+              else if (this.yearMax !== YEARMAX)
+              {
+                maxMode = 4;
+                okToFilter = true;
+              }
+            }
+          }
+        }
+      }
 
-      // // If user is changing year min and it went from valid to invalid, refilter.
-      // if (savedKey == 'yearMin' && !newYearMinValid && !this.prevYearMinValid) {
-      //   okToFilter = false;
-      // } not true if prevyear was the default min, and valid???
-      // false if : was valid, now invalid
-      //
-      //
-      // // If user is changing year min and it went from valid to invalid, refilter.
-      // if (savedKey == 'yearMin' && !newYearMinValid && this.prevYearMinValid) {
-      //   okToFilter = true;
-      //   this.prevYearMinValid = false;
-      // }
-      // // If user is changing year min and it went from invalid to valid, refilter.
-      // if (savedKey == 'yearMin' && newYearMinValid && !this.prevYearMinValid) {
-      //   okToFilter = true;
-      //   this.prevYearMinValid = true;
-      // }
-      //
-      // // If user is changing year max and it went from valid to invalid, refilter.
-      // if (savedKey == 'yearMax' && !newYearMaxValid && this.prevYearMaxValid) {
-      //   okToFilter = true;
-      //   this.prevYearMaxValid = false;
-      // }
-      // // If user is changing year max and it went from invalid to valid, refilter.
-      // if (savedKey == 'yearMax' && newYearMaxValid && !this.prevYearMaxValid) {
-      //   okToFilter = true;
-      //   this.prevYearMaxValid = true;
-      // }
+      this.minYearColor = 'red';
+      if (minMode >= 3)
+        this.minYearColor = 'black';
 
-      // if (this.yearMinValid )
-      // if (this.yearMin <= this.yearMax) {
-      //   if (this.yearMin >= YEARMIN) {
-      //     if (this.yearMax <= YEARMAX) {
-      //       okToFilter = true;
-      //     }
-      //   }
-      // }
+      this.maxYearColor = 'red';
+      if (maxMode >= 3)
+        this.maxYearColor = 'black';
+
+      if (this.prevMinYearColor !== this.minYearColor ||
+        this.prevMaxYearColor !== this.maxYearColor)
+      {
+        this.setState ({ updateFilter: true }); // cause render of filter
+      }
+
+      this.prevMinYearColor = this.minYearColor;
+      this.prevMaxYearColor = this.maxYearColor;
+      this.prevMinMode = minMode;
+      this.prevMaxMode = maxMode;
+
+      console.log("onFilterChg - 2 minMode=", minMode, ", prevMinMode=",
+        this.prevMinMode, ", maxMode=", maxMode,
+        ", prevMaxMode=", this.prevMaxMode);
+
+      console.log("onFilterChg - 3 minYearColor=", this.minYearColor, ", prevMinYearColor=",
+        this.prevMinYearColor, ", maxYearColor=", this.maxYearColor,
+        ", prevMaxYearColor=", this.prevMaxYearColor);
     }
 
     //console.log("Filter, onFilterChange - got obj=" + JSON.stringify(obj));
@@ -341,24 +381,26 @@ class MapPage extends React.Component {
     // this.setState((prevState, currentProps) => {
     //     return { ...prevState, fakeDataFiltered: [...tempNewFakeData] };
     // });
-    if (okToFilter) {
-      console.log("Ok to filter is true");
+    if (okToFilter)
+    {
+      console.log("onFilterChg - Ok to filter is true");
       this.setState((prevState, currentProps) => {
-          return { ...prevState, fakeDataFiltered: [...this.fakeData.filter(this.filterTheData)] };
+          return { ...prevState, fakeDataFiltered: [...this.fakeData.filter(this.filterTheData)],
+            updateFilter: false };
       });
     }
   }
 
   // Make this function pure and never update state here.
   render() {
-    console.log("MapPage - rendering filter and map, minYearOk=", this.minYearOk);
+    console.log("MapPage ------ rendering filter and map, minYearColor=", this.minYearColor);
     return (
       <div>
         <Filter
           {...this.props}
           onFilterChange={this.onFilterChange}
-          minYearColor={this.minYearOk}
-          maxYearColor={this.maxYearOk}
+          minYearColor={this.minYearColor}
+          maxYearColor={this.maxYearColor}
           minSqftColor={this.minSqftOk}
           maxSqftColor={this.maxSqftOk}
         />

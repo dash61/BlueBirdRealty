@@ -228,13 +228,13 @@ export default class Filter extends React.Component {
               <Input placeholder='Min' style={{ width: '55px', height: '25px' }}
                 onChange={this.onChangeYearMin}>
                 <input style={{paddingLeft: '6px', paddingRight: '6px',
-                  color:(this.props.minYearColor ? 'black' : 'red')}}/>
+                  color: this.props.minYearColor }}/>
               </Input>
               <p style={{ display: 'inline'}}> - </p>
               <Input placeholder='Max' style={{ width: '58px', height: '25px' }}
                 onChange={this.onChangeYearMax}>
                 <input style={{paddingLeft: '6px', paddingRight: '6px',
-                  color:(this.props.maxYearColor ? 'black' : 'red')}}/>
+                  color: this.props.maxYearColor }}/>
               </Input>
             </Grid.Column>
             <Grid.Column style={{ paddingTop: '8px', paddingRight: '0px' }}>
