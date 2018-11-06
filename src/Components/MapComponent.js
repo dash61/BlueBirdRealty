@@ -104,11 +104,8 @@ export default class MapComponent extends React.Component {
   // componentDidMount for that). See comment before
   // componentWillReceiveProps for more info.
   componentWillMount = () => {
-    console.log("cwm - settings:");
-    console.log(this.currentLat);
-    console.log(this.currentLong);
-    console.log(this.state.currentZoomLevel);
-    //console.log("cwm - exited");
+    console.log("cwm - lat=", this.currentLat, ", lng=",
+      this.currentLong, ", zoom=", this.state.currentZoomLevel);
   }
 
 

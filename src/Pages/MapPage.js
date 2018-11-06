@@ -23,16 +23,20 @@ class MapPage extends React.Component {
     this.yearMax = YEARMAX; // ditto-ish
     this.yearMinReal = 0;   // real values typed in
     this.yearMaxReal = 0;   // ditto
-    this.sqftMin = SQFTMIN;
-    this.sqftMax = SQFTMAX;
     this.minYearColor = 'red';
     this.maxYearColor = 'red';
-    this.prevMinMode = 0;
-    this.prevMaxMode = 0;
     this.prevMinYearColor = 'red';
     this.prevMaxYearColor = 'red';
-    this.minSqftOk = false;
-    this.maxSqftOk = false;
+    this.prevYearMinMode = 0;
+    this.prevYearMaxMode = 0;
+    this.sqftMin = SQFTMIN;
+    this.sqftMax = SQFTMAX;
+    this.minSqftColor = 'red';
+    this.maxSqftColor = 'red';
+    this.prevMinSqftColor = 'red';
+    this.prevMaxSqftColor = 'red';
+    this.prevSqftMinMode = 0;
+    this.prevSqftMaxMode = 0;
     this.filterObj = {}; // for use in filtering map data
     //this.fakeDataFiltered = [];
     this.state = {
@@ -143,6 +147,9 @@ class MapPage extends React.Component {
     }
     if (obj.yearBuilt < this.yearMin || obj.yearBuilt > this.yearMax)
       return false;
+
+    if (obj.sqft < this.sqftMin || obj.sqft > this.sqftMax)
+      return false;
     // for (const key of Object.keys(obj)){
     //   console.log("filterTheData - key = " + key + ", value = " + obj[key].toString());
     // }
@@ -161,8 +168,10 @@ class MapPage extends React.Component {
     let checkYear = false;
     let checkSqft = false;
     let savedKey = '';
-    let minMode = 0; // ie, the state of the state machine
-    let maxMode = 0; // ie, the state of the state machine
+    let minYearMode = 0; // ie, the state of the state machine
+    let maxYearMode = 0; // ie, the state of the state machine
+    let minSqftMode = 0; // ie, the state of the state machine
+    let maxSqftMode = 0; // ie, the state of the state machine
 
 
     for (const key of Object.keys(obj)) {
@@ -218,17 +227,29 @@ class MapPage extends React.Component {
           savedKey = key; // key track of which item user was just editing
           break;
 
+        case 'sqftMin':
+          this.sqftMin = parseInt(obj[key]);
+          checkSqft = true;
+          savedKey = key; // key track of which item user was just editing
+          break;
+
+        case 'sqftMax':
+          this.sqftMax = parseInt(obj[key]);
+          checkSqft = true;
+          savedKey = key; // key track of which item user was just editing
+          break;
+
         default:
           console.log("onFilterChg - default, key=" + key);
       }
     }
-    console.log("onFilterChg - checkYear=", checkYear, ", yearMin=", this.yearMin,
-      ", yearMax=", this.yearMax);
+    // console.log("onFilterChg - yearMin=", this.yearMin, ", yearMax=",
+    //   this.yearMax, ", sqftMin=", this.sqftMin, ", sqftMax=", this.sqftMax);
 
     if (checkYear) {
-      console.log("onFilterChg - 1 minMode=", minMode, ", prevMinMode=",
-        this.prevMinMode, ", maxMode=", maxMode,
-        ", prevMaxMode=", this.prevMaxMode);
+      // console.log("onFilterChg - 1 minYearMode=", minYearMode, ", prevYearMinMode=",
+      //   this.prevYearMinMode, ", maxYearMode=", maxYearMode,
+      //   ", prevYearMaxMode=", this.prevYearMaxMode);
 
       /* implied values: 1935 for min, 2018 for max (ie, the limits)
       State 1 - 0-3 digits, red, invalid, val = implied value
@@ -238,149 +259,230 @@ class MapPage extends React.Component {
       State 5 - 4 digits, black, render, val != implied value
       Backspacing when 4 digits causes transition back to state 1.
       Transitioning from state 5 to state 1 causes render.
+      I optimized the code below to collapse states 0-2 and get
+      rid of unnecessary code.
       */
       // Check if year being typed is valid.
       let newYearMinValid = (this.yearMin >= YEARMIN && this.yearMin <= YEARMAX);
       let newYearMaxValid = (this.yearMax >= YEARMIN && this.yearMax <= YEARMAX);
+
       if (savedKey === 'yearMin')
       {
-        maxMode = this.prevMaxMode;
+        maxYearMode = this.prevYearMaxMode;
         if (this.yearMin < 1000)
         {
-          if (this.prevMinMode === 4)
+          if (this.prevYearMinMode === 4)
           {
-            this.yearMinReal = this.yearMin;
+            //this.yearMinReal = this.yearMin;
             this.yearMin = YEARMIN;
             okToFilter = true;
           }
         }
         else  // min year has 4 digits or more
         {
-          if (newYearMinValid)
+          if (newYearMaxValid && newYearMinValid)
           {
-            if (newYearMaxValid)
+            if (this.yearMin <= this.yearMax)
             {
-              if (this.yearMin <= this.yearMax)
+              minYearMode = 3;
+              if (this.yearMin !== YEARMIN)
               {
-                if (this.yearMin === YEARMIN)
-                {
-                  minMode = 3;
-                }
-                else
-                {
-                  minMode = 4;
-                  okToFilter = true;
-                  if (this.yearMin <= this.yearMaxReal)
-                  {
-                    maxMode = 4;
-                  }
-                }
+                minYearMode = 4;
+                okToFilter = true;
+                // if (this.yearMin <= this.yearMaxReal)
+                // {
+                //   maxYearMode = 4;
+                //   console.log("Weird case1 - yrMin=", this.yearMin,
+                //     ", yrMax=", this.yearMax, ", yrMaxReal=",
+                //     this.yearMaxReal);
+                // }
               }
             }
-            else // max is not in range
+          }
+          else if (newYearMinValid) // max is not in range
+          {
+            minYearMode = 3;
+            if (this.yearMin !== YEARMIN)
             {
-              if (this.yearMin === YEARMIN)
-              {
-                minMode = 3;
-              }
-              else
-              {
-                minMode = 4;
-                okToFilter = true;
-              }
+              minYearMode = 4;
+              okToFilter = true;
             }
           }
         }
       }
       else if (savedKey === 'yearMax')
       {
-        minMode = this.prevMinMode;
+        minYearMode = this.prevYearMinMode;
         if (this.yearMax < 1000)
         {
-          if (this.prevMaxMode === 4)
+          if (this.prevYearMaxMode === 4)
           {
-            this.yearMaxReal = this.yearMax;
+            //this.yearMaxReal = this.yearMax;
             this.yearMax = YEARMAX;
             okToFilter = true;
           }
         }
         else
         {
-          if (newYearMaxValid)
+          if (newYearMinValid && newYearMaxValid)
           {
-            if (newYearMinValid)
+            if (this.yearMin <= this.yearMax)
             {
-              if (this.yearMin <= this.yearMax)
+              maxYearMode = 3;
+              if (this.yearMax !== YEARMAX)
               {
-                if (this.yearMax === YEARMAX)
-                {
-                  maxMode = 3;
-                }
-                else if (this.yearMax !== YEARMAX)
-                {
-                  maxMode = 4;
-                  okToFilter = true;
-                  if ((this.yearMinReal >= YEARMIN) && (this.yearMinReal <= this.yearMax))
-                  {
-                    minMode = 4;
-                  }
-                }
+                maxYearMode = 4;
+                okToFilter = true;
+                // if ((this.yearMinReal >= YEARMIN) && (this.yearMinReal <= this.yearMax))
+                // {
+                //   minYearMode = 4;
+                //   console.log("Weird case2 - yrMin=", this.yearMin,
+                //     ", yrMax=", this.yearMax, ", yrMinReal=",
+                //     this.yearMinReal);
+                // }
               }
             }
-            else // min is not in range
+          }
+          else if (newYearMaxValid) // min is not in range
+          {
+            maxYearMode = 3;
+            if (this.yearMax !== YEARMAX)
             {
-              if (this.yearMax === YEARMAX)
-              {
-                maxMode = 3;
-              }
-              else if (this.yearMax !== YEARMAX)
-              {
-                maxMode = 4;
-                okToFilter = true;
-              }
+              maxYearMode = 4;
+              okToFilter = true;
             }
           }
         }
       }
 
       this.minYearColor = 'red';
-      if (minMode >= 3)
+      if (minYearMode >= 3)
         this.minYearColor = 'black';
 
       this.maxYearColor = 'red';
-      if (maxMode >= 3)
+      if (maxYearMode >= 3)
         this.maxYearColor = 'black';
 
       if (this.prevMinYearColor !== this.minYearColor ||
-        this.prevMaxYearColor !== this.maxYearColor)
+          this.prevMaxYearColor !== this.maxYearColor)
       {
         this.setState ({ updateFilter: true }); // cause render of filter
       }
 
+      // console.log("onFilterChg - 2 minYearMode=", minYearMode, ", prevYearMinMode=",
+      //   this.prevYearMinMode, ", maxYearMode=", maxYearMode,
+      //   ", prevYearMaxMode=", this.prevYearMaxMode);
+      //
+      // console.log("onFilterChg - 3 minYr=" + this.minYearColor + ", prevMinYr=" +
+      //   this.prevMinYearColor + ", maxYr=" + this.maxYearColor +
+      //   ", prevMaxYr=" + this.prevMaxYearColor);
+
       this.prevMinYearColor = this.minYearColor;
       this.prevMaxYearColor = this.maxYearColor;
-      this.prevMinMode = minMode;
-      this.prevMaxMode = maxMode;
+      this.prevYearMinMode = minYearMode;
+      this.prevYearMaxMode = maxYearMode;
+    }
+    else if (checkSqft)
+    {
+      let newSqftMinValid = (this.sqftMin >= SQFTMIN && this.sqftMin <= SQFTMAX);
+      let newSqftMaxValid = (this.sqftMax >= SQFTMIN && this.sqftMax <= SQFTMAX);
 
-      console.log("onFilterChg - 2 minMode=", minMode, ", prevMinMode=",
-        this.prevMinMode, ", maxMode=", maxMode,
-        ", prevMaxMode=", this.prevMaxMode);
+      if (savedKey === 'sqftMin')
+      {
+        maxSqftMode = this.prevSqftMaxMode;
+        if (this.sqftMin < 1000)
+        {
+          if (this.prevSqftMinMode === 4)
+          {
+            this.sqftMin = SQFTMIN;
+            okToFilter = true;
+          }
+        }
+        else  // min sqft has 4 digits or more
+        {
+          if (newSqftMaxValid && newSqftMinValid)
+          {
+            if (this.sqftMin <= this.sqftMax)
+            {
+              minSqftMode = 3;
+              if (this.sqftMin !== SQFTMIN)
+              {
+                minSqftMode = 4;
+                okToFilter = true;
+              }
+            }
+          }
+          else if (newSqftMinValid) // max is not in range
+          {
+            minSqftMode = 3;
+            if (this.sqftMin !== SQFTMIN)
+            {
+              minSqftMode = 4;
+              okToFilter = true;
+            }
+          }
+        }
+      }
+      else if (savedKey === 'sqftMax')
+      {
+        minSqftMode = this.prevSqftMinMode;
+        if (this.sqftMax < 1000)
+        {
+          if (this.prevSqftMaxMode === 4)
+          {
+            this.sqftMax = SQFTMAX;
+            okToFilter = true;
+          }
+        }
+        else
+        {
+          if (newSqftMinValid && newSqftMaxValid)
+          {
+            if (this.sqftMin <= this.sqftMax)
+            {
+              maxSqftMode = 3;
+              if (this.sqftMax !== SQFTMAX)
+              {
+                maxSqftMode = 4;
+                okToFilter = true;
+              }
+            }
+          }
+          else if (newSqftMaxValid) // min is not in range
+          {
+            maxSqftMode = 3;
+            if (this.sqftMax !== SQFTMAX)
+            {
+              maxSqftMode = 4;
+              okToFilter = true;
+            }
+          }
+        }
+      }
 
-      console.log("onFilterChg - 3 minYearColor=", this.minYearColor, ", prevMinYearColor=",
-        this.prevMinYearColor, ", maxYearColor=", this.maxYearColor,
-        ", prevMaxYearColor=", this.prevMaxYearColor);
+      this.minSqftColor = 'red';
+      if (minSqftMode >= 3)
+        this.minSqftColor = 'black';
+
+      this.maxSqftColor = 'red';
+      if (maxSqftMode >= 3)
+        this.maxSqftColor = 'black';
+
+      if (this.prevMinSqftColor !== this.minSqftColor ||
+          this.prevMaxSqftColor !== this.maxSqftColor)
+      {
+        this.setState ({ updateFilter: true }); // cause render of filter
+      }
+
+      this.prevMinSqftColor = this.minSqftColor;
+      this.prevMaxSqftColor = this.maxSqftColor;
+      this.prevSqftMinMode = minSqftMode;
+      this.prevSqftMaxMode = maxSqftMode;
+    }
+    else {
+      okToFilter = true; // for non-year and non-sqft situations
     }
 
-    //console.log("Filter, onFilterChange - got obj=" + JSON.stringify(obj));
-    // this.fakeDataFiltered = this.fakeData.filter(this.filterTheData);
-    // this.setState((prevState, currentProps) => {
-    //   return { ...prevState, fakeDataUpdated: true }; });
-
-    // let tempNewFakeData = await this.fakeData.filter(this.filterTheData);
-    // console.log("onFilterChange - length of new fakeData = ", tempNewFakeData.length);
-    // this.setState((prevState, currentProps) => {
-    //     return { ...prevState, fakeDataFiltered: [...tempNewFakeData] };
-    // });
     if (okToFilter)
     {
       console.log("onFilterChg - Ok to filter is true");
@@ -401,8 +503,8 @@ class MapPage extends React.Component {
           onFilterChange={this.onFilterChange}
           minYearColor={this.minYearColor}
           maxYearColor={this.maxYearColor}
-          minSqftColor={this.minSqftOk}
-          maxSqftColor={this.maxSqftOk}
+          minSqftColor={this.minSqftColor}
+          maxSqftColor={this.maxSqftColor}
         />
         <Container style={{ width: '95%', marginBottom: '20px'}}>
           <MapComponent

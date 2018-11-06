@@ -151,32 +151,20 @@ export default class Filter extends React.Component {
   }
 
   onChangeYearMin = (event, data) => {
-    //let result = data.value;
-    console.log(data.value);
-    // if (result < YEARMIN)
-    //   result = YEARMIN;
-    // if (result > YEARMAX)
-    //   result = YEARMAX;
-
-    //this.setState({ 'yearMin': result });
-    //if (result >= YEARMIN && result <= YEARMAX)
     this.props.onFilterChange({ 'yearMin': data.value });
   }
 
   onChangeYearMax = (event, data) => {
-    //let result = data.value;
-    console.log(data.value);
-    // if (result < YEARMIN)
-    //   result = YEARMIN;
-    // if (result > YEARMAX)
-    //   result = YEARMAX;
-
-    //this.setState({ 'yearMax': result });
-    //if (result >= YEARMIN && result <= YEARMAX)
     this.props.onFilterChange({ 'yearMax': data.value });
   }
 
-  // TODO - DEFINE callbacks for year built min/max and sqft min/max edit boxes
+  onChangeSqftMin = (event, data) => {
+    this.props.onFilterChange({ 'sqftMin': data.value });
+  }
+
+  onChangeSqftMax = (event, data) => {
+    this.props.onFilterChange({ 'sqftMax': data.value });
+  }
 
   render() {
     return (
@@ -242,12 +230,16 @@ export default class Filter extends React.Component {
                 style={{ marginBottom: '5px', borderStyle: 'none',
                 paddingLeft: '0px', paddingRight: '0px'}}>
                 Sq. Feet:</Label>
-                <Input placeholder='Min' style={{ width: '55px', height: '25px' }}>
-                  <input style={{paddingLeft: '3px', paddingRight: '3px'}}/>
+                <Input placeholder='Min' style={{ width: '55px', height: '25px' }}
+                  onChange={this.onChangeSqftMin}>
+                  <input style={{paddingLeft: '3px', paddingRight: '3px',
+                    color: this.props.minSqftColor }}/>
                 </Input>
                 <p style={{ display: 'inline'}}> - </p>
-                <Input placeholder='Max' style={{ width: '58px', height: '25px' }}>
-                  <input style={{paddingLeft: '3px', paddingRight: '3px'}}/>
+                <Input placeholder='Max' style={{ width: '58px', height: '25px' }}
+                  onChange={this.onChangeSqftMax}>
+                  <input style={{paddingLeft: '3px', paddingRight: '3px',
+                    color: this.props.maxSqftColor }}/>
                 </Input>
             </Grid.Column>
           </Grid.Row>
