@@ -275,6 +275,7 @@ provide for sizing control (m=small, 240px on longest side). Experiment with the
     }
   }
 
+  // NOTE - this function is being deprecated. Use componentDidUpdate instead.
   // From: https://medium.com/@nimelrian/as-of-react-16-you-should-use-componentwillreceiveprops-only-to-update-state-synchronously-as-in-a9d66457c510
   // As of React 16, you should use componentWillReceiveProps only to update
   // state synchronously (as in: Don’t dispatch requests/set timeouts here!).
@@ -283,9 +284,8 @@ provide for sizing control (m=small, 240px on longest side). Experiment with the
   // asynchronously when props change!
   componentWillReceiveProps = nextprops => {
     //console.log("CWRP - props=", nextprops);
-
     this.updateMarkers(nextprops.fakeData);
-  };
+  }
 
   // shouldComponentUpdate - don't update state in this function.
   // componentWillUpdate - ditto.

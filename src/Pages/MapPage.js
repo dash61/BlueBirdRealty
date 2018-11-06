@@ -70,15 +70,16 @@ class MapPage extends React.Component {
     //console.log (this.state);
   }
 
+  // NOTE - this function is being deprecated.
   componentWillMount = () => {
     console.log("cwm - MapPage - generating fake data");
 
-    this.fakeData = _.times(20000, (i) => {
+    this.fakeData = _.times(17000, (i) => {
       return ({
         name: faker.name.firstName() + ' ' + faker.name.lastName(),
         zip: zipCodeData['items'][i]['zip'],
         streetAddr: faker.address.streetAddress(),
-        sqft: Math.floor(SQFTMIN + Math.random() * 4001), // 1000 min, 4000 max
+        sqft: Math.floor(SQFTMIN + Math.random() * 3001), // 1000 min, 4000 max
         beds: Math.floor(1 + Math.random() * 5), // 1 min, 5 max
         baths: Math.floor(1 + Math.random() * 4), // 1 min, 4 max
         price: (this.bsr === 'buy' ?
@@ -108,8 +109,8 @@ class MapPage extends React.Component {
     //   return { ...prevState, fakeDataUpdated: true }; });
     this.setState((prevState, currentProps) => {
       return { ...prevState, fakeDataFiltered: [...this.fakeData] }; });
-    console.log("cwm - MapPage - Length of fakeData = " + this.fakeData.length.toString());
-    console.log("cwm - MapPage - Length of fakeDataF = " + this.state.fakeDataFiltered.length.toString());
+    console.log("cwm - MapPage - Length of fakeData =", this.fakeData.length);
+    console.log("cwm - MapPage - Length of fakeDataF =", this.state.fakeDataFiltered.length);
   }
 
   // Given a latitude or longitude value, randomize it so that it is close
@@ -151,7 +152,7 @@ class MapPage extends React.Component {
     if (obj.sqft < this.sqftMin || obj.sqft > this.sqftMax)
       return false;
     // for (const key of Object.keys(obj)){
-    //   console.log("filterTheData - key = " + key + ", value = " + obj[key].toString());
+    //   console.log("filterTheData - key = " + key + ", value = ", obj[key]);
     // }
     return true;
   }
@@ -185,13 +186,13 @@ class MapPage extends React.Component {
           else {  // obj={"price":"$500/month+"}
             this.priceMin = obj[key].match(/[0-9]+/);
           }
-          //console.log("onFilterChange - priceMin = ", this.priceMin);
+          console.log("onFilterChange - priceMin =", this.priceMin);
           if (this.priceMin == null)
             this.priceMin = 0;
           else
             // priceMin will be an array of stuff, we need [0].
             this.priceMin = this.parseFloatIgnoreCommas(this.priceMin[0]);
-          //console.log("onFilterChange - priceMin = " + this.priceMin.toString());
+          console.log("onFilterChange - priceMin =", this.priceMin);
           break;
 
         // If the user picks 'Any', the 1st char will be 'A'.
@@ -202,7 +203,7 @@ class MapPage extends React.Component {
             this.bedsMin = 0;
           else
             this.bedsMin = parseInt(this.bedsMin);
-          //console.log("onFilterChange - bedsMin = " + this.bedsMin.toString());
+          //console.log("onFilterChange - bedsMin =", this.bedsMin);
           break;
 
         // ditto from the beds comment.
@@ -212,7 +213,7 @@ class MapPage extends React.Component {
             this.bathsMin = 0;
             else
               this.bathsMin = parseInt(this.bathsMin);
-          //console.log("onFilterChange - bathsMin = " + this.bathsMin.toString());
+          //console.log("onFilterChange - bathsMin =", this.bathsMin);
           break;
 
         case 'yearMin':

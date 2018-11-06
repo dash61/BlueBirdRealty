@@ -96,6 +96,8 @@ export default class Filter extends React.Component {
       if (data.value !== '') // ie, user hit X button to clear filter
         spanText = optionPriceRent[data.value]['text'];
     }
+    // There are 2 ways to get the span text: the above, and this
+    // commented out section. I've left it here as an example.
     // if (event.target) {
     //   let [key, value] = Object.entries(event.target)[0];
     //   spanText = value.child ? value.child.stateNode.innerHTML :
@@ -110,12 +112,6 @@ export default class Filter extends React.Component {
     let spanText = "Beds";
     if (data.value !== '') // ie, user hit X button to clear filter
       spanText = optionBeds[data.value]['text'];
-    // if (event.target) {
-    //   let [key, value] = Object.entries(event.target)[0];
-    //   spanText = value.child ? value.child.stateNode.innerHTML :
-    //     value.stateNode.innerHTML;
-    //   console.log("onChangeBed - spanText = ", spanText)
-    // }
     this.setState({ 'bedValue': spanText });
     this.props.onFilterChange({ 'beds': spanText })
   }
@@ -125,12 +121,6 @@ export default class Filter extends React.Component {
     //console.log(data);
     if (data.value !== '') // ie, user hit X button to clear filter
       spanText = optionBaths[data.value]['text'];
-    // if (event.target) {
-    //   let [key, value] = Object.entries(event.target)[0];
-    //   spanText = value.child ? value.child.stateNode.innerHTML :
-    //     value.stateNode.innerHTML;
-    //   console.log("onChangeBath - spanText = ", spanText)
-    // }
     this.setState({ 'bathValue': spanText });
     this.props.onFilterChange({ 'baths': spanText })
   }
@@ -139,13 +129,6 @@ export default class Filter extends React.Component {
     let spanText = "Type";
     if (data.value !== '') // ie, user hit X button to clear filter
       spanText = optionType[data.value]['text'];
-    // console.log(spanText);
-    // if (event.target) {
-    //   let [key, value] = Object.entries(event.target)[0];
-    //   spanText = value.child ? value.child.stateNode.innerHTML :
-    //     value.stateNode.innerHTML;
-    //   console.log("onChangeType - spanText = ", spanText)
-    // }
     this.setState({ 'typeValue': spanText });
     this.props.onFilterChange({ 'type': spanText })
   }

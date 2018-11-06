@@ -19,76 +19,20 @@ import './HomePage.css';
 import faker from 'faker';
 import _ from 'lodash';
 
-/*
-<style>
-    @keyframes back-to-docs {
-        0% { transform: translateY(0); }
-        50% { transform: translateY(0.35em); }
-        100% { transform: translateY(0); }
-    }
-</style>
-<div style="position: fixed; margin: 2em; bottom: 0px; left: 0px; animation: back-to-docs 1.5s ease-in-out infinite; z-index: 6;">
-  <a className="ui teal button active" aria-current="page" role="button" href="/layouts">
-    <i aria-hidden="true" className="left arrow icon"></i>
-    Layouts</a>
-  <a target="_blank" className="ui secondary button" role="button" href="https://github.com/Semantic-Org/Semantic-UI-React/blob/master/docs/src/layouts/HomepageLayout.js">
-    <i aria-hidden="true" className="github icon"></i>
-    Source</a>
-</div>
-*/
-
 /* eslint-disable react/no-multi-comp */
-/* Heads up! SearchBox uses inline styling, however it's not the best practice. Use CSS or styled components for
- * such things.
- */
-// const SearchBox = ({ mobile }) => (
-//   <Segment>
-//     <Search placeholder='Search countries...' />
-//   </Segment>
-//   <Container text>
-//     <Header
-//       as='h1'
-//       content='Imagine-a-Company'
-//       style={{
-//         fontSize: mobile ? '2em' : '4em',
-//         fontWeight: 'normal',
-//         marginBottom: 0,
-//         marginTop: mobile ? '1.5em' : '1em',
-//       }}
-//     />
-//     <Header
-//       as='h2'
-//       content='Do whatever you want when you want to.'
-//       style={{
-//         fontSize: mobile ? '1.5em' : '1.7em',
-//         fontWeight: 'normal',
-//         marginTop: mobile ? '0.5em' : '1.5em',
-//       }}
-//     />
-//     <Button primary size='huge'>
-//       Get Started
-//       <Icon name='right arrow' />
-//     </Button>
-//   </Container>
-// )
-//
-// SearchBox.propTypes = {
-//   mobile: PropTypes.bool,
-// }
-
 
 export default class HomePage extends React.Component
 {
   constructor(props) {
     super(props);
     this.state = {
-      value: 'buy',    // default to set radio button
-      openModal: false, // default for modal for "Find Out How" btn
+      bsrValue: 'buy',    // default to set radio button
+      openModal: false,   // default for modal for "Find Out How" btn
       redirect: false
     };
     this.searchTerm = "";
   }
-  handleChange = (e, { value }) => this.setState({ value });
+  handleChange = (e, { value }) => this.setState({ bsrValue: value });
   avatar1 = faker.image.avatar();
   avatar2 = faker.image.avatar();
   showModal = () => this.setState({ openModal: true });
@@ -123,11 +67,25 @@ export default class HomePage extends React.Component
 
 
   render() {
-    // Handle if search bar action caused redirect to map page
+    // Handle if search bar action caused redirect to map or sell pages
     if (this.state.redirect) {
-      return <Redirect push to={{pathname: "/map",
+      console.log("HomePage, render, redirecting to map or sell");
+      //this.setState({ redirect: false }); // reset
+      if (this.state.bsrValue === 'sell')
+      {
+        return <Redirect push to={{pathname: "/sell",
+          state: { searchTerm: "",
+            bsr: this.state.bsrValue } }} />;
+      }
+      else if (this.state.bsrValue === 'buy')
+      {
+        return <Redirect push to={{pathname: "/map1",
+          state: { searchTerm: this.searchTerm,
+            bsr: this.state.bsrValue } }} />;
+      }
+      return <Redirect push to={{pathname: "/map2",
         state: { searchTerm: this.searchTerm,
-          bsr: this.state.value } }} />;
+          bsr: this.state.bsrValue } }} />;
     }
 
     return (
@@ -170,7 +128,7 @@ export default class HomePage extends React.Component
                     label='Buy'
                     name='radioGroup'
                     value='buy'
-                    checked={this.state.value === 'buy'}
+                    checked={this.state.bsrValue === 'buy'}
                     onChange={this.handleChange}
                   />
                 </Grid.Column>
@@ -180,7 +138,7 @@ export default class HomePage extends React.Component
                     label='Sell'
                     name='radioGroup'
                     value='sell'
-                    checked={this.state.value === 'sell'}
+                    checked={this.state.bsrValue === 'sell'}
                     onChange={this.handleChange}
                   />
                 </Grid.Column>
@@ -190,7 +148,7 @@ export default class HomePage extends React.Component
                     label='Rent'
                     name='radioGroup'
                     value='rent'
-                    checked={this.state.value === 'rent'}
+                    checked={this.state.bsrValue === 'rent'}
                     onChange={this.handleChange}
                   />
                 </Grid.Column>
@@ -325,43 +283,3 @@ export default class HomePage extends React.Component
     )
   }
 }
-
-/*
-//margin: '1em 0em',
-// <Search placeholder='Address, City, Zip, or Neighborhood'
-//   style={{ width: '100%'}} size='big'
-//   noResultsMessage='' resultsRenderer='Null'/>
-//style={{marginLeft: 'auto', marginRight: 'auto', width: '60%'}}
-//<Image src='/images/bill-williams-17163-unsplash.jpg'/>
-
-<Segment style={{ padding: '4em 0em' }} vertical>
-  <Grid container stackable verticalAlign='middle'>
-    <Grid.Row>
-      <Grid.Column width={8}>
-        <Header as='h3' style={{ fontSize: '2em' }}>
-          New Listings
-        </Header>
-        <p style={{ fontSize: '1.33em' }}>
-          We can give your company superpowers to do things that they never thought possible.
-          Let us delight your customers and empower your needs... through pure data analytics.
-        </p>
-        <Header as='h3' style={{ fontSize: '2em' }}>
-          We Make Bananas That Can Dance
-        </Header>
-        <p style={{ fontSize: '1.33em' }}>
-          Yes thats right, you thought it was the stuff of dreams, but even bananas can be
-          bioengineered.
-        </p>
-      </Grid.Column>
-      <Grid.Column floated='right' width={6}>
-        <Image bordered rounded size='large' src='/images/bill-williams-17163-unsplash.jpg' />
-      </Grid.Column>
-    </Grid.Row>
-    <Grid.Row>
-      <Grid.Column textAlign='center'>
-        <Button size='huge'>Check Them Out</Button>
-      </Grid.Column>
-    </Grid.Row>
-  </Grid>
-</Segment>
-*/

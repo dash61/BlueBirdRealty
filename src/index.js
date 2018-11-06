@@ -9,6 +9,7 @@ import HomePage from './Pages/HomePage';
 import LoginPage from './Pages/LoginPage';
 import SignUpPage from './Pages/SignUpPage';
 import MapPage from './Pages/MapPage';
+import SellPage from './Pages/SellPage';
 import './index.css'; // include this *after* semantic.min.css!
 
 const supportsHistory = 'pushState' in window.history;
@@ -19,11 +20,15 @@ ReactDOM.render(
       <Route exact path="/" component={HomePage} />
       <Route path="/login" component={LoginPage} />
       <Route path="/signup" component={SignUpPage} />
-      <Route path="/map" component={MapPage} />
+      <Route path="/sell" component={SellPage} />
+      <Route path="/map1" component={MapPage} />
+      <Route path="/map2" component={MapPage} />
     </NavHdrFtr>
   </BrowserRouter>,
   document.getElementById('root')
 );
+//tried: <Route path="/sell" render={(routeProps)=><SellPage {...routeProps} something={'foo'}/>}/>
+// didn't help NavHdrFtr get data I need.
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.

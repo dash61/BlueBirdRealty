@@ -14,7 +14,7 @@ import {
   Sidebar,
   Visibility,
 } from 'semantic-ui-react';
-import { Link } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 import { Redirect } from 'react-router';
 import LogoAvatar from './LogoAvatar';
 
@@ -27,10 +27,36 @@ class DesktopContainer extends React.Component {
     super(props);
     console.log("DesktopContainer - props = " + JSON.stringify(props));
     this.state = {
-      activeItem: '',
       redirect: false,
       bsrValue: 'buy'
     }
+  }
+
+  // Only update state if props change and if state is not yet correct.
+  componentDidUpdate = (prevProps, prevState) => {
+    console.log ("NavHdr - cdu, prevProps=", prevProps, ", prevState=",
+      prevState);
+    console.log("NavHdr - cdu, redirect =", this.state.redirect,
+      ", bsrValue=", this.state.bsrValue);
+    if (this.state.redirect)
+      this.setState({ redirect: false }); // reset
+
+    let name = (this.state.bsrValue === 'buy' ? 'Buy' :
+      (this.state.bsrValue === 'sell' ? 'Sell' : 'Rent'));
+  }
+
+  // NOTE - this function is being deprecated. Use componentDidUpdate instead.
+  componentWillReceiveProps = nextprops => {
+    console.log("NavHdr - CWRP - props=", nextprops);
+  }
+
+  // NOTE - this function is being deprecated.
+  componentWillMount = () => {
+    console.log("NavHdr - cwm");
+  }
+
+  componentDidMount = () => {
+    console.log("NavHdr - cdm");
   }
 
   hideFixedMenu = () => this.setState({ fixed: false })
@@ -38,25 +64,34 @@ class DesktopContainer extends React.Component {
   handleItemClick = (e, { name }) => {
     let bsr = (name === 'Buy' ? 'buy' : (name === 'Sell' ? 'sell' : 'rent'));
     let redirectMe = false;
-    if (name === 'Buy' || name === 'Rent' || name === 'Sell') // TODO - redirect to diff page
+    if (name === 'Buy' || name === 'Rent')// || name === 'Sell') // TODO - redirect to diff page
       redirectMe = true;
     console.log("NavHdr, handleItemClick, bsr=", bsr, ", name=", name);
-    this.setState({ activeItem: name, bsrValue: bsr, redirect: redirectMe });
+    this.setState({ bsrValue: bsr, redirect: redirectMe });
   }
-
-  state = { activeItem: '' }
 
   render() {
     // Handle if search bar action caused redirect to map page
     if (this.state.redirect) {
-      console.log("NavHdr, render, redirecting to map");
-      this.setState({ redirect: false }); // reset
-      return <Redirect push to={{pathname: "/map",
+      console.log("NavHdr, render, redirecting to map or sell");
+      if (this.state.bsrValue === 'sell')
+      {
+        return <Redirect push to={{pathname: "/sell",
+          state: { searchTerm: "",
+            bsr: this.state.bsrValue } }} />;
+      }
+      else if (this.state.bsrValue === 'buy')
+      {
+        return <Redirect push to={{pathname: "/map1",
+          state: { searchTerm: "",
+            bsr: this.state.bsrValue } }} />;
+      }
+      let name = (this.state.bsrValue === 'buy' ? 'Buy' : 'Rent');
+      return <Redirect push to={{pathname: "/map2",
         state: { searchTerm: "",
           bsr: this.state.bsrValue } }} />;
     }
 
-    const { activeItem } = this.state
     const { children } = this.props
     const { fixed } = this.state
 
@@ -99,27 +134,23 @@ class DesktopContainer extends React.Component {
                   { fixed &&
                     <Menu.Item
                       name='Home'
-                      as={Link} to='/'
-                      active={activeItem === 'Home'}
+                      as={NavLink} to='/'
                       onClick={this.handleItemClick}
                     />
                   }
                   <Menu.Item
                     name='Buy'
-                    as={Link} to='/map'
-                    active={activeItem === 'Buy'}
+                    as={NavLink} to='/map1'
                     onClick={this.handleItemClick}
                   />
                   <Menu.Item
                     name='Sell'
-                    //as={Link} to='/map'
-                    active={activeItem === 'Sell'}
+                    as={NavLink} to='/sell'
                     onClick={this.handleItemClick}
                   />
                   <Menu.Item
                     name='Rent'
-                    as={Link} to='/map'
-                    active={activeItem === 'Rent'}
+                    as={NavLink} to='/map2'
                     onClick={this.handleItemClick}
                   />
                   <Dropdown item text='More'>
@@ -153,26 +184,6 @@ class DesktopContainer extends React.Component {
     )
   }
 }
-/* orig:
-menu, after inverted={!fixed}
-pointing={!fixed}
-
-<Menu.Item
-  name='More'
-  as={Link} to='/map'
-  active={activeItem === 'More'}
-  onClick={this.handleItemClick}
-/>
-<Menu.Item position='right' name='blah' onClick={this.handleItemClick}>
-  <Button as={Link} to='/login' inverted={!fixed}>
-    Log in
-  </Button>
-  <Button as={Link} to='/signup' inverted={!fixed} primary={fixed} style={{ marginLeft: '0.5em' }}>
-    Sign Up
-  </Button>
-</Menu.Item>
-*/
-//            <HomepageHeading />
 
 DesktopContainer.propTypes = {
   children: PropTypes.node,
@@ -203,9 +214,9 @@ class MobileContainer extends React.Component {
             style={{width: '200px'}}
           >
             <Menu.Item as={Link} to='/' >Home</Menu.Item>
-            <Menu.Item as={Link} itemname='buy' to='/map'>Buy</Menu.Item>
-            <Menu.Item as={Link} itemname='sell' to='/map'>Sell</Menu.Item>
-            <Menu.Item as={Link} itemname='rent' to='/map'>Rent</Menu.Item>
+            <Menu.Item as={Link} itemname='buy' to='/map1'>Buy</Menu.Item>
+            <Menu.Item as={Link} itemname='sell' to='/sell'>Sell</Menu.Item>
+            <Menu.Item as={Link} itemname='rent' to='/map2'>Rent</Menu.Item>
             <Dropdown item text='More'>
               <Dropdown.Menu style={{position:'initial',
                 marginTop: '10px', borderRadius: '4px'}} >
@@ -241,30 +252,16 @@ class MobileContainer extends React.Component {
 
             {children}
           </Sidebar.Pusher>
-
         </Sidebar.Pushable>
       </Responsive>
     )
   }
 }
-/*
-
-orig, after menu.item close
-<Menu.Item position='right'>
-  <Button as='a' inverted>
-    Log in
-  </Button>
-  <Button as='a' inverted style={{ marginLeft: '0.5em' }}>
-    Sign Up
-  </Button>
-</Menu.Item>
-*/
-//              <HomepageHeading mobile />
 
 MobileContainer.propTypes = {
   children: PropTypes.node,
 }
-//
+
 const NavHdrFtr = ({ children }) => (
   <div>
     <DesktopContainer>{children}</DesktopContainer>
