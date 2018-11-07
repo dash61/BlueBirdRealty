@@ -134,7 +134,8 @@ class DesktopContainer extends React.Component {
             <Segment
               inverted
               textAlign='center'
-              style={{ minHeight: 100, padding: '2em 0em', border: 'none' }}
+              style={{ minHeight: 100, padding: '2em 0em', border: 'none',
+                width: '70%'}}
               vertical
             >
               <Menu
