@@ -507,7 +507,7 @@ class MapPage extends React.Component {
           minSqftColor={this.minSqftColor}
           maxSqftColor={this.maxSqftColor}
         />
-        <Container style={{ width: '95%', marginBottom: '20px'}}>
+        <Container style={{ width: '95%', marginBottom: '24px'}}>
           <MapComponent
             {...this.props}
             fakeData={this.state.fakeDataFiltered}

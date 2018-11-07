@@ -20,9 +20,23 @@ import LogoAvatar from './LogoAvatar';
 
 /* Heads up!
  * Neither Semantic UI nor Semantic UI React offer a responsive navbar,
-*  however, it can be implemented easily.
+ *  however, it can be implemented easily.
  * It can be more complicated, but you can create really flexible markup.
  */
+
+const NavHdrFtr = ({ children }) => (
+ <div>
+   <DesktopContainer>{children}</DesktopContainer>
+   <MobileContainer>{children}</MobileContainer>
+   <Footer></Footer>
+ </div>
+)
+
+NavHdrFtr.propTypes = {
+ children: PropTypes.node,
+}
+
+
 class DesktopContainer extends React.Component {
   constructor(props) {
     super(props);
@@ -74,7 +88,7 @@ class DesktopContainer extends React.Component {
   render() {
     // Handle if search bar action caused redirect to map page
     if (this.state.redirect) {
-      console.log("NavHdr, render, redirecting to map or sell");
+      //console.log("NavHdr, render, redirecting to map or sell");
       if (this.state.bsrValue === 'sell')
       {
         return <Redirect push to={{pathname: "/sell",
@@ -112,7 +126,7 @@ class DesktopContainer extends React.Component {
               border: 'none'}}
             >
             <Segment inverted vertical as={Link} to='/'
-              style={{ padding: '0', border: 'none' }}
+              style={{ padding: '0', border: 'none', width: '30%' }}
               name='Home'
               >
               <LogoAvatar />
@@ -260,18 +274,6 @@ class MobileContainer extends React.Component {
 }
 
 MobileContainer.propTypes = {
-  children: PropTypes.node,
-}
-
-const NavHdrFtr = ({ children }) => (
-  <div>
-    <DesktopContainer>{children}</DesktopContainer>
-    <MobileContainer>{children}</MobileContainer>
-    <Footer></Footer>
-  </div>
-)
-
-NavHdrFtr.propTypes = {
   children: PropTypes.node,
 }
 

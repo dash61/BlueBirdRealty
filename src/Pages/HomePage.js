@@ -238,7 +238,7 @@ export default class HomePage extends React.Component
                   <Icon name='home' />
                   Ready to Find Your New Home?
                 </Header>
-                <Button as={Link} to='/map' primary>Search Listings</Button>
+                <Button as={Link} to='/map1' primary>Search Listings</Button>
               </Grid.Row>
 
               <Divider horizontal>&nbsp;</Divider>
