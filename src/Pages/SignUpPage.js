@@ -9,6 +9,8 @@ import {
   Modal,
   Segment
 } from "semantic-ui-react";
+import { NavLink } from 'react-router-dom';
+
 
 export default class SignUpPage extends React.Component {
   state = { open: false };
@@ -67,7 +69,10 @@ export default class SignUpPage extends React.Component {
               </Segment>
             </Form>
             <Message>
-              Have an account? <a href="/login">&nbsp;&nbsp;Log In</a>
+              Have an account?
+                <Message.Item basic size='medium'
+                  as={NavLink} to='/login'>&nbsp;&nbsp;Log In
+                </Message.Item>
             </Message>
           </Grid.Column>
         </Grid>
