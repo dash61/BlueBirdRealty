@@ -19,7 +19,8 @@ import { Redirect } from 'react-router';
 import LogoAvatar from './LogoAvatar';
 
 /* Heads up!
- * Neither Semantic UI nor Semantic UI React offer a responsive navbar, however, it can be implemented easily.
+ * Neither Semantic UI nor Semantic UI React offer a responsive navbar,
+*  however, it can be implemented easily.
  * It can be more complicated, but you can create really flexible markup.
  */
 class DesktopContainer extends React.Component {
@@ -46,18 +47,18 @@ class DesktopContainer extends React.Component {
   }
 
   // NOTE - this function is being deprecated. Use componentDidUpdate instead.
-  componentWillReceiveProps = nextprops => {
-    console.log("NavHdr - CWRP - props=", nextprops);
-  }
+  // componentWillReceiveProps = nextprops => {
+  //   console.log("NavHdr - CWRP - props=", nextprops);
+  // }
 
   // NOTE - this function is being deprecated.
-  componentWillMount = () => {
-    console.log("NavHdr - cwm");
-  }
+  // componentWillMount = () => {
+  //   console.log("NavHdr - cwm");
+  // }
 
-  componentDidMount = () => {
-    console.log("NavHdr - cdm");
-  }
+  // componentDidMount = () => {
+  //   console.log("NavHdr - cdm");
+  // }
 
   hideFixedMenu = () => this.setState({ fixed: false })
   showFixedMenu = () => this.setState({ fixed: true })

@@ -5,6 +5,7 @@ import {
   Grid,
   Input,
   Label,
+  Segment
 } from 'semantic-ui-react';
 import { YEARMIN, YEARMAX, SQFTMIN, SQFTMAX } from './Constants';
 
@@ -151,68 +152,81 @@ export default class Filter extends React.Component {
 
   render() {
     return (
-      <Container>
-        <Grid columns={3}>
+      //<Container>
+        <Grid container columns={3} stackable>
           <Grid.Row style={{ paddingTop: '0px', marginTop: '24px',
             paddingBottom: '0px', marginBottom: '0px' }}>
             <Grid.Column>
-              { this.bsr === 'buy' &&
-              <Dropdown icon='dollar sign' text={this.state.priceValue}
-                options={optionPriceBuy} selection clearable button labeled
-                className='icon' onChange={this.onChangePrice}
-                style={{ zIndex: '1101'}}/>
-              }
-              { this.bsr === 'rent' &&
-              <Dropdown icon='dollar sign' text={this.state.priceValue}
-                options={optionPriceRent} selection clearable button labeled
-                className='icon' onChange={this.onChangePrice}
-                style={{ zIndex: '1101'}}/>
-              }
+              <Segment basic>
+                { this.bsr === 'buy' &&
+                <Dropdown icon='dollar sign' text={this.state.priceValue}
+                  options={optionPriceBuy} selection clearable button labeled
+                  className='icon' onChange={this.onChangePrice}
+                  style={{ zIndex: '1103'}}/>
+                }
+                { this.bsr === 'rent' &&
+                <Dropdown icon='dollar sign' text={this.state.priceValue}
+                  options={optionPriceRent} selection clearable button labeled
+                  className='icon' onChange={this.onChangePrice}
+                  style={{ zIndex: '1103'}}/>
+                }
+              </Segment>
             </Grid.Column>
             <Grid.Column>
-              <Dropdown icon='bed' text={this.state.bedValue}
-                options={optionBeds} selection clearable button labeled
-                className='icon' onChange={this.onChangeBed}
-                style={{ zIndex: '501'}}/>
+              <Segment basic>
+                <Dropdown icon='bed' text={this.state.bedValue}
+                  options={optionBeds} selection clearable button labeled
+                  className='icon' onChange={this.onChangeBed}
+                  style={{ zIndex: '1102'}}/>
+              </Segment>
             </Grid.Column>
             <Grid.Column>
-              <Dropdown icon='bath' text={this.state.bathValue}
-                options={optionBaths} selection clearable button labeled
-                className='icon' onChange={this.onChangeBath}
-                style={{ zIndex: '501'}}/>
+              <Segment basic>
+                <Dropdown icon='bath' text={this.state.bathValue}
+                  options={optionBaths} selection clearable button labeled
+                  className='icon' onChange={this.onChangeBath}
+                  style={{ zIndex: '1101'}}/>
+              </Segment>
             </Grid.Column>
           </Grid.Row>
 
           <Grid.Row style={{ paddingTop: '0px', marginTop: '20px',
             paddingBottom: '0px', marginBottom: '30px' }}>
             <Grid.Column>
-              <Dropdown icon='home' text={this.state.typeValue}
-                options={optionType} selection clearable  button labeled
-                className='icon' onChange={this.onChangeType}
-                style={{ zIndex: '1100'}}/>
+              <Segment basic>
+                <Dropdown icon='home' text={this.state.typeValue}
+                  options={optionType} selection clearable  button labeled
+                  className='icon' onChange={this.onChangeType}
+                  style={{ zIndex: '1100'}}/>
+              </Segment>
             </Grid.Column>
             <Grid.Column style={{ paddingTop: '8px', paddingRight: '0px' }}>
-              <Label size='small' basic horizontal color='blue'
-                style={{ marginBottom: '5px', borderStyle: 'none',
-                paddingLeft: '0px', paddingRight: '0px'}}>
-                Year Built:</Label>
-              <Input placeholder='Min' style={{ width: '55px', height: '25px' }}
-                onChange={this.onChangeYearMin}>
-                <input style={{paddingLeft: '6px', paddingRight: '6px',
-                  color: this.props.minYearColor }}/>
-              </Input>
-              <p style={{ display: 'inline'}}> - </p>
-              <Input placeholder='Max' style={{ width: '58px', height: '25px' }}
-                onChange={this.onChangeYearMax}>
-                <input style={{paddingLeft: '6px', paddingRight: '6px',
-                  color: this.props.maxYearColor }}/>
-              </Input>
+              <Segment basic>
+                <Label size='small' basic horizontal color='blue'
+                  style={{ marginBottom: '5px', borderStyle: 'none',
+                  paddingLeft: '0px', paddingRight: '0px'}}>
+                  Year Built:
+                </Label>
+                <Input placeholder='Min' style={{ width: '55px', height: '25px' }}
+                  onChange={this.onChangeYearMin}>
+                  <input style={{paddingLeft: '6px', paddingRight: '6px',
+                    color: this.props.minYearColor }}/>
+                </Input>
+                <p style={{ display: 'inline'}}> - </p>
+                <Input placeholder='Max' style={{ width: '58px', height: '25px' }}
+                  onChange={this.onChangeYearMax}>
+                  <input style={{paddingLeft: '6px', paddingRight: '6px',
+                    color: this.props.maxYearColor }}/>
+                </Input>
+              </Segment>
             </Grid.Column>
             <Grid.Column style={{ paddingTop: '8px', paddingRight: '0px' }}>
-              <Label size='small' basic horizontal color='blue'
-                style={{ marginBottom: '5px', borderStyle: 'none',
-                paddingLeft: '0px', paddingRight: '0px'}}>
-                Sq. Feet:</Label>
+              <Segment basic>
+                <Label size='small' basic horizontal color='blue'
+                  style={{ marginBottom: '5px', borderStyle: 'none',
+                  paddingLeft: '0px', paddingRight: '0px'}}>
+                  Sq. Feet:
+                </Label>
                 <Input placeholder='Min' style={{ width: '55px', height: '25px' }}
                   onChange={this.onChangeSqftMin}>
                   <input style={{paddingLeft: '3px', paddingRight: '3px',
@@ -224,10 +238,11 @@ export default class Filter extends React.Component {
                   <input style={{paddingLeft: '3px', paddingRight: '3px',
                     color: this.props.maxSqftColor }}/>
                 </Input>
+              </Segment>
             </Grid.Column>
           </Grid.Row>
         </Grid>
-      </Container>
+      //</Container>
     );
   }
 }
