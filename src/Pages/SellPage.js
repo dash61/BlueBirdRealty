@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Checkbox, Form, Header } from 'semantic-ui-react';
+import { Button, Form, Header } from 'semantic-ui-react';
 import { Redirect } from 'react-router';
 
 

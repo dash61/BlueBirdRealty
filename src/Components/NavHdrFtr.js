@@ -55,9 +55,6 @@ class DesktopContainer extends React.Component {
       ", bsrValue=", this.state.bsrValue);
     if (this.state.redirect)
       this.setState({ redirect: false }); // reset
-
-    let name = (this.state.bsrValue === 'buy' ? 'Buy' :
-      (this.state.bsrValue === 'sell' ? 'Sell' : 'Rent'));
   }
 
   // NOTE - this function is being deprecated. Use componentDidUpdate instead.
@@ -101,7 +98,6 @@ class DesktopContainer extends React.Component {
           state: { searchTerm: "",
             bsr: this.state.bsrValue } }} />;
       }
-      let name = (this.state.bsrValue === 'buy' ? 'Buy' : 'Rent');
       return <Redirect push to={{pathname: "/map2",
         state: { searchTerm: "",
           bsr: this.state.bsrValue } }} />;
