@@ -157,7 +157,7 @@ export default class Filter extends React.Component {
           <Grid.Row style={{ paddingTop: '0px', marginTop: '24px',
             paddingBottom: '0px', marginBottom: '0px' }}>
             <Grid.Column>
-              <Segment basic>
+              <Segment basic style={{ paddingBottom: '0px'}}>
                 { this.bsr === 'buy' &&
                 <Dropdown icon='dollar sign' text={this.state.priceValue}
                   options={optionPriceBuy} selection clearable button labeled
@@ -173,7 +173,7 @@ export default class Filter extends React.Component {
               </Segment>
             </Grid.Column>
             <Grid.Column>
-              <Segment basic>
+              <Segment basic style={{ paddingBottom: '0px'}}>
                 <Dropdown icon='bed' text={this.state.bedValue}
                   options={optionBeds} selection clearable button labeled
                   className='icon' onChange={this.onChangeBed}
@@ -181,7 +181,7 @@ export default class Filter extends React.Component {
               </Segment>
             </Grid.Column>
             <Grid.Column>
-              <Segment basic>
+              <Segment basic style={{ paddingBottom: '0px'}}>
                 <Dropdown icon='bath' text={this.state.bathValue}
                   options={optionBaths} selection clearable button labeled
                   className='icon' onChange={this.onChangeBath}
@@ -190,10 +190,10 @@ export default class Filter extends React.Component {
             </Grid.Column>
           </Grid.Row>
 
-          <Grid.Row style={{ paddingTop: '0px', marginTop: '20px',
-            paddingBottom: '0px', marginBottom: '30px' }}>
+          <Grid.Row style={{ paddingTop: '0px', marginTop: '0px',
+            paddingBottom: '0px', marginBottom: '34px' }}>
             <Grid.Column>
-              <Segment basic>
+              <Segment basic style={{ paddingBottom: '0px'}}>
                 <Dropdown icon='home' text={this.state.typeValue}
                   options={optionType} selection clearable  button labeled
                   className='icon' onChange={this.onChangeType}
@@ -201,7 +201,7 @@ export default class Filter extends React.Component {
               </Segment>
             </Grid.Column>
             <Grid.Column style={{ paddingTop: '8px', paddingRight: '0px' }}>
-              <Segment basic>
+              <Segment basic style={{ paddingBottom: '0px'}}>
                 <Label size='small' basic horizontal color='blue'
                   style={{ marginBottom: '5px', borderStyle: 'none',
                   paddingLeft: '0px', paddingRight: '0px'}}>
@@ -221,7 +221,7 @@ export default class Filter extends React.Component {
               </Segment>
             </Grid.Column>
             <Grid.Column style={{ paddingTop: '8px', paddingRight: '0px' }}>
-              <Segment basic>
+              <Segment basic style={{ paddingBottom: '0px'}}>
                 <Label size='small' basic horizontal color='blue'
                   style={{ marginBottom: '5px', borderStyle: 'none',
                   paddingLeft: '0px', paddingRight: '0px'}}>

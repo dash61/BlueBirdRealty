@@ -129,7 +129,7 @@ class DesktopContainer extends React.Component {
                 secondary={!fixed}
                 className='center'
                 size='large'
-                style={{ marginTop: '0em', border: 'none', zIndex: '1102' }}
+                style={{ marginTop: '0em', border: 'none', zIndex: '1104' }}
               >
                 <Container style={{ alignItems: 'center'}}>
                   { fixed &&
@@ -155,7 +155,7 @@ class DesktopContainer extends React.Component {
                     onClick={this.handleItemClick}
                   />
                   <Dropdown item text='More'>
-                    <Dropdown.Menu style={{zIndex: 1102}}>
+                    <Dropdown.Menu style={{zIndex: 1104}}>
                       <Dropdown.Item icon='calculator' text='Calculators' />
                       <Dropdown.Item icon='edit' text='Edit Profile' />
                       <Dropdown.Item icon='globe' text='Choose Language' />
