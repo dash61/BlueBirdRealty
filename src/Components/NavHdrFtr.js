@@ -146,7 +146,7 @@ class DesktopContainer extends React.Component {
                   { fixed &&
                     <Menu.Item
                       name='Home'
-                      as={NavLink} to='/'
+                      as={NavLink} exact to='/'
                       onClick={this.handleItemClick}
                     />
                   }

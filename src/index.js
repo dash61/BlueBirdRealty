@@ -1,7 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import * as serviceWorker from './serviceWorker';
-//import 'semantic-ui-css/semantic.min.css';
 import 'semantic-ui/dist/semantic.min.css';
 import  { BrowserRouter, Route } from 'react-router-dom';
 import NavHdrFtr from './Components/NavHdrFtr';
@@ -16,7 +15,7 @@ const supportsHistory = 'pushState' in window.history;
 
 ReactDOM.render(
   <BrowserRouter forceRefresh={!supportsHistory}>
-    <NavHdrFtr path="/">
+    <NavHdrFtr>
       <Route exact path="/" component={HomePage} />
       <Route path="/login" component={LoginPage} />
       <Route path="/signup" component={SignUpPage} />
@@ -27,6 +26,8 @@ ReactDOM.render(
   </BrowserRouter>,
   document.getElementById('root')
 );
+/* NavHdrFtr used to include path="/" */
+
 //tried: <Route path="/sell" render={(routeProps)=><SellPage {...routeProps} something={'foo'}/>}/>
 // didn't help NavHdrFtr get data I need.
 

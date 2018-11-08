@@ -121,25 +121,19 @@ export default class MapComponent extends React.Component {
       await this.init(this._mapNode);
 
 
-/* You need this in the popup text: '<img src="' + the_url + '" />'
- Just need to figure out the_url, which might be a 2 step process.
- Step 1 might be:
-  https://api.flickr.com/services/feeds/photos_public.gne?api_key={key here}&tags=house&format=json&per_page=1&safe_search=1&content_type=1
- Docs say you have to provide your api key; also specify per_page=1 or some small
- number.
-
+/*
 Flickr url has the form:
 https://farm{farm-id}.staticflickr.com/{server-id}/{id}_{secret}_[mstzb].jpg
+like: "https://farm2.staticflickr.com/1833/44104167362_d80021358b_m.jpg",
 where you have to get the various fields from a previous search (and its
 returned json). {secret} is your api key (not secret?); mstzb are letters you can
 provide for sizing control (m=small, 240px on longest side). Experiment with these.
+What I did: used the python script I created called getFlickrUrls.py to create
+a json file of urls, then used viewPix.py to view download each file,
+then manually looked at each file to see if it was a usable good picture.
+If it was, I kept it in the json file, otherwise I deleted it. I built up
+a few hundred good URLs this way and saved them to houseImages.json.
 */
-      // Add handler for clicking a particular marker
-      //markerCluster.on('mouseover', async function (a) {
-      	//console.log(a.layer._popup._content);
-        //a.layer._popup._content = "hi there!";
-        //a.bindPopup(popup);
-      //});
 
       this.updateMarkers(this.props.fakeData);
 
@@ -174,6 +168,7 @@ provide for sizing control (m=small, 240px on longest side). Experiment with the
       this._mapNode.leafletElement.addControl(this.searchControl);
 
       // Add event handler to capture new latlng when user pans map.
+      // NOTE: this function caused problems; didn't need it anyway.
       // this._mapNode.leafletElement.on("moveend",  () => {
       //   const latlng = this.state.map.getCenter(); // map is ok here, we're in the future
       //   //console.log(latlng);
@@ -287,36 +282,6 @@ provide for sizing control (m=small, 240px on longest side). Experiment with the
     this.updateMarkers(nextprops.fakeData);
   }
 
-  // shouldComponentUpdate - don't update state in this function.
-  // componentWillUpdate - ditto.
-
-  // Ok to call setState here, but first check that a state change occurred
-  // or you will get an infinite loop. Check that prevState.xxxx != valueNow
-  // before calling setState.
-  componentDidUpdate = (prevProps, prevState) => {
-    // code to run when the component receives new props or state
-    //console.log ("cdu - enter, this.mapIsValid=" + this.mapIsValid.toString());
-    //console.log (prevProps);
-    //console.log (prevState);
-    //console.log (this.state);
-
-    // This prevents recreating the layers (and control in lower right)
-    // each time we navigate to the maps page.
-    //if (prevState.map != null || this.mapIsValid) return;
-    //console.log ("cdu - PAST BARRIER, but exiting");
-
-  }
-
-  // This needs node.js fs.readFile.
-  // readJSONFile(filename) {
-  //   return new Promise((resolve, reject) => {
-  //     fs.readFile(filename, 'utf-8', (err, data) => {
-  //       if (err) reject(err);
-  //       resolve(JSON.parse(data));
-  //     });
-  //   });
-  // }
-
   // From leaflet docs: "There are two types of layers: (1) base layers that are mutually exclusive
   // (only one can be visible on your map at a time), e.g. tile layers, and (2) overlays, which are
   // all the other stuff you put over the base layers."
@@ -334,8 +299,7 @@ provide for sizing control (m=small, 240px on longest side). Experiment with the
   async init(id) {
     if (this.state.map) return;
 
-    //console.log("init - entered");
-
+    // console.log("init - entered");
     // console.log('Current window pathname: ' + window.location.pathname);
     // console.log('Current doc pathname: ' + document.location.pathname);
     // console.log('Current directory: ' + process.cwd());
@@ -362,26 +326,23 @@ provide for sizing control (m=small, 240px on longest side). Experiment with the
     leafletMap.on("zoomend", e => {
       const updatedZoomLevel = leafletMap.getZoom();
       this.handleZoomLevelChange(updatedZoomLevel);
-      //console.log("new zoom is ", updatedZoomLevel, ", local state=", this.state);
-      //console.log("new zoom is ", updatedZoomLevel, ", store state=", this.props.mapData);
+      // console.log("new zoom is ", updatedZoomLevel, ", local state=", this.state);
+      // console.log("new zoom is ", updatedZoomLevel, ", store state=", this.props.mapData);
     });
 
-
-    //console.log("init - exited");
+    // console.log("init - exited");
   }
 
   handleZoomLevelChange = newZoomLevel => {
     this.setState({ currentZoomLevel: newZoomLevel });
-    //console.log("Zoom callback - zoom is " + newZoomLevel.toString());
-    //console.log ("handleZoomLevelChange - layerData = ", this.state.layerData);
+    // console.log("Zoom callback - zoom is " + newZoomLevel.toString());
+    // console.log ("handleZoomLevelChange - layerData = ", this.state.layerData);
   };
 
   // Make this function pure and never update state here.
   render() {
     config.params.center = [this.currentLat, this.currentLong];
     config.params.zoom = this.state.currentZoomLevel;
-    //console.log("Render - config.params:")
-    //console.log(config.params);
 
     return (
       <div id="map-component">
@@ -397,53 +358,3 @@ provide for sizing control (m=small, 240px on longest side). Experiment with the
     );
   }
 }
-
-
-
-// May need this if you want to turn on/off marker pane
-// (named 'markerPane' by Leaflet by default).
-  // Turn on or off an overlay layer. Pass in name string of layer and on/off boolean.
-  // This will add or remove the layer from the layers group.
-  // changeLayerVisibility = (layerName, isVisible) => {
-  //   for (let key in this.state.layerData) {
-  //     if (key === layerName) {
-  //       let value = this.state.layerData[key];
-  //       if (isVisible) {
-  //         this.state.ourLayerGroup.addLayer(value.layerPtr);
-  //         //this.state.layerData[key].visible = true;
-  //         //this.setState({ layerData[key].visible: true });
-  //         // return {...state,
-  //         //         ...{ layerData: {...state.layerData,
-  //         //         ...{ [action.layerName]: {...state.layerData[action.layerName],
-  //         //         ...{ layerOn: true }}}}}}; // works
-  //
-  //         this.setState(prevState => ({
-  //           layerData: {
-  //             ...prevState.layerData,
-  //             ...{
-  //               [key]: {
-  //                 ...prevState.layerData[key],
-  //                 ...{ visible: true }
-  //               }
-  //             }
-  //           }
-  //         }));
-  //       } else {
-  //         this.state.ourLayerGroup.removeLayer(value.layerPtr);
-  //         //this.state.layerData[key].visible = false;
-  //         //this.setState({ layerData[key].visible: false });
-  //         this.setState(prevState => ({
-  //           layerData: {
-  //             ...prevState.layerData,
-  //             ...{
-  //               [key]: {
-  //                 ...prevState.layerData[key],
-  //                 ...{ visible: false }
-  //               }
-  //             }
-  //           }
-  //         }));
-  //       }
-  //     }
-  //   }
-  // };
