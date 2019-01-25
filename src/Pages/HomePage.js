@@ -38,18 +38,15 @@ export default class HomePage extends React.Component
   showModal = () => this.setState({ openModal: true });
   closeModal = () => this.setState({ openModal: false });
   searchTermChanging = (e) => {
-    //console.log("you searched for " + e.target.value);
     this.searchTerm = e.target.value;
   }
   handleSearchKeyPress = (e) => {
     if (e.key === 'Enter') {
-      console.log("Enter pressed, search for " + this.searchTerm);
       this.setState({ redirect: true });
     }
   }
   searchNow = (e) => {
     e.preventDefault();
-    console.log("You clicked search icon, searching for " + this.searchTerm);
     this.setState({ redirect: true });
   }
 
@@ -63,13 +60,11 @@ export default class HomePage extends React.Component
         zip: faker.address.zipCode()
       });
 	});
-  //console.log(addresses);
 
 
   render() {
     // Handle if search bar action caused redirect to map or sell pages
     if (this.state.redirect) {
-      console.log("HomePage, render, redirecting to map or sell");
       //this.setState({ redirect: false }); // reset
       if (this.state.bsrValue === 'sell')
       {

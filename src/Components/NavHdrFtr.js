@@ -40,7 +40,6 @@ NavHdrFtr.propTypes = {
 class DesktopContainer extends React.Component {
   constructor(props) {
     super(props);
-    console.log("DesktopContainer - props = " + JSON.stringify(props));
     this.state = {
       redirect: false,
       bsrValue: 'buy'
@@ -49,27 +48,9 @@ class DesktopContainer extends React.Component {
 
   // Only update state if props change and if state is not yet correct.
   componentDidUpdate = (prevProps, prevState) => {
-    console.log ("NavHdr - cdu, prevProps=", prevProps, ", prevState=",
-      prevState);
-    console.log("NavHdr - cdu, redirect =", this.state.redirect,
-      ", bsrValue=", this.state.bsrValue);
     if (this.state.redirect)
       this.setState({ redirect: false }); // reset
   }
-
-  // NOTE - this function is being deprecated. Use componentDidUpdate instead.
-  // componentWillReceiveProps = nextprops => {
-  //   console.log("NavHdr - CWRP - props=", nextprops);
-  // }
-
-  // NOTE - this function is being deprecated.
-  // componentWillMount = () => {
-  //   console.log("NavHdr - cwm");
-  // }
-
-  // componentDidMount = () => {
-  //   console.log("NavHdr - cdm");
-  // }
 
   hideFixedMenu = () => this.setState({ fixed: false })
   showFixedMenu = () => this.setState({ fixed: true })
@@ -78,14 +59,12 @@ class DesktopContainer extends React.Component {
     let redirectMe = false;
     if (name === 'Buy' || name === 'Rent')// || name === 'Sell') // TODO - redirect to diff page
       redirectMe = true;
-    console.log("NavHdr, handleItemClick, bsr=", bsr, ", name=", name);
     this.setState({ bsrValue: bsr, redirect: redirectMe });
   }
 
   render() {
     // Handle if search bar action caused redirect to map page
     if (this.state.redirect) {
-      //console.log("NavHdr, render, redirecting to map or sell");
       if (this.state.bsrValue === 'sell')
       {
         return <Redirect push to={{pathname: "/sell",
@@ -204,7 +183,6 @@ DesktopContainer.propTypes = {
 class MobileContainer extends React.Component {
   constructor(props) {
     super(props);
-    //console.log("MobileContainer - props = " + JSON.stringify(props));
     this.state = {}
   }
 

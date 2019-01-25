@@ -14,7 +14,6 @@ import { YEARMIN, YEARMAX, SQFTMIN, SQFTMAX } from '../Components/Constants';
 class MapPage extends React.Component {
   constructor(props) {
     super(props);
-    console.log("MapPage - ctor props=", props); // loadLayerData is passed; call this to update the store (during init, and later)
     this.fakeData = {};
     this.priceMin = 0;
     this.bedsMin = 0;
@@ -48,31 +47,11 @@ class MapPage extends React.Component {
     if (props.location && props.location.state && props.location.state.bsr)
     {
       this.bsr = props.location.state.bsr;
-      console.log("MapPage - bsr term = ", props.location.state.bsr);
     }
-  }
-
-  // Invoked immediately after component is inserted into tree.
-  // Ok to call setState here.
-  componentDidMount = () => {
-    console.log("cdm - MapPage");
-  }
-
-  componentDidUpdate = (prevProps, prevState) => {
-    // code to run when the component receives new props or state
-    //console.log ("cdu - MapPage");
-    //console.log (prevProps);
-    console.log ("MapPage - cdu - prevState=", prevState);
-    // if (prevState.updateFilter === true && this.state.updateFilter === true)
-    // {
-    //   this.setState ({ updateFilter: false });
-    // }
-    //console.log (this.state);
   }
 
   // NOTE - this function is being deprecated.
   componentWillMount = () => {
-    console.log("cwm - MapPage - generating fake data");
 
     this.fakeData = _.times(17000, (i) => {
       return ({
@@ -91,26 +70,10 @@ class MapPage extends React.Component {
         state: zipCodeData['items'][i]['abbr'],
         image: houseImages['items'][Math.floor(0 + Math.random() * 282)], // 281 images
         yearBuilt: Math.floor(YEARMIN + Math.random() * 84) // 1935 min, 2018 max
-        /* Need this data: name (ie, name of seller), street, suite, city,
-           state, zip, lat, long.
-           Ignore city from faker; instead use geonames lookup below to turn
-           the zip code into a city, state, lat and long. Then randomize the
-           lat/long data.
-           Then console.log it. When done, save this block of data to a
-           .json file.
-           NOTE: These are strings: name, zip, addr.
-                 These are numbers: baths, beds, price, sqft.
-        */
       });
   	});
-    //console.log(this.fakeData);
-    //this.fakeDataFiltered = this.fakeData.slice(0);
-    // this.setState((prevState, currentProps) => {
-    //   return { ...prevState, fakeDataUpdated: true }; });
     this.setState((prevState, currentProps) => {
       return { ...prevState, fakeDataFiltered: [...this.fakeData] }; });
-    console.log("cwm - MapPage - Length of fakeData =", this.fakeData.length);
-    console.log("cwm - MapPage - Length of fakeDataF =", this.state.fakeDataFiltered.length);
   }
 
   // Given a latitude or longitude value, randomize it so that it is close
@@ -130,7 +93,6 @@ class MapPage extends React.Component {
   // Year built - tbd
   // Sq ft - tbd
   filterTheData = (obj) => {
-    //console.log("filterTheData running");
     if (this.priceMin !== 0)
     {
       if (obj.price < this.priceMin)
@@ -151,14 +113,10 @@ class MapPage extends React.Component {
 
     if (obj.sqft < this.sqftMin || obj.sqft > this.sqftMax)
       return false;
-    // for (const key of Object.keys(obj)){
-    //   console.log("filterTheData - key = " + key + ", value = ", obj[key]);
-    // }
     return true;
   }
 
   parseFloatIgnoreCommas = (number) => {
-    //console.log("parseFloatIgnoreCommas - number = ", number);
     let numberNoCommas = number.replace(/,/g, '');
     return parseFloat(numberNoCommas);
   }
@@ -176,7 +134,6 @@ class MapPage extends React.Component {
 
 
     for (const key of Object.keys(obj)) {
-      console.log("onFilterChg - key = " + key + ", value =", obj[key]);
       switch (key)
       {
         case 'price':
@@ -186,13 +143,11 @@ class MapPage extends React.Component {
           else {  // obj={"price":"$500/month+"}
             this.priceMin = obj[key].match(/[0-9]+/);
           }
-          console.log("onFilterChange - priceMin =", this.priceMin);
           if (this.priceMin == null)
             this.priceMin = 0;
           else
             // priceMin will be an array of stuff, we need [0].
             this.priceMin = this.parseFloatIgnoreCommas(this.priceMin[0]);
-          console.log("onFilterChange - priceMin =", this.priceMin);
           break;
 
         // If the user picks 'Any', the 1st char will be 'A'.
@@ -203,7 +158,6 @@ class MapPage extends React.Component {
             this.bedsMin = 0;
           else
             this.bedsMin = parseInt(this.bedsMin);
-          //console.log("onFilterChange - bedsMin =", this.bedsMin);
           break;
 
         // ditto from the beds comment.
@@ -213,7 +167,6 @@ class MapPage extends React.Component {
             this.bathsMin = 0;
             else
               this.bathsMin = parseInt(this.bathsMin);
-          //console.log("onFilterChange - bathsMin =", this.bathsMin);
           break;
 
         case 'yearMin':
@@ -244,14 +197,8 @@ class MapPage extends React.Component {
           console.log("onFilterChg - default, key=" + key);
       }
     }
-    // console.log("onFilterChg - yearMin=", this.yearMin, ", yearMax=",
-    //   this.yearMax, ", sqftMin=", this.sqftMin, ", sqftMax=", this.sqftMax);
 
     if (checkYear) {
-      // console.log("onFilterChg - 1 minYearMode=", minYearMode, ", prevYearMinMode=",
-      //   this.prevYearMinMode, ", maxYearMode=", maxYearMode,
-      //   ", prevYearMaxMode=", this.prevYearMaxMode);
-
       /* implied values: 1935 for min, 2018 for max (ie, the limits)
       State 1 - 0-3 digits, red, invalid, val = implied value
       State 2 - 4 digits, red, invalid, out of range of min,max
@@ -290,13 +237,6 @@ class MapPage extends React.Component {
               {
                 minYearMode = 4;
                 okToFilter = true;
-                // if (this.yearMin <= this.yearMaxReal)
-                // {
-                //   maxYearMode = 4;
-                //   console.log("Weird case1 - yrMin=", this.yearMin,
-                //     ", yrMax=", this.yearMax, ", yrMaxReal=",
-                //     this.yearMaxReal);
-                // }
               }
             }
           }
@@ -334,13 +274,6 @@ class MapPage extends React.Component {
               {
                 maxYearMode = 4;
                 okToFilter = true;
-                // if ((this.yearMinReal >= YEARMIN) && (this.yearMinReal <= this.yearMax))
-                // {
-                //   minYearMode = 4;
-                //   console.log("Weird case2 - yrMin=", this.yearMin,
-                //     ", yrMax=", this.yearMax, ", yrMinReal=",
-                //     this.yearMinReal);
-                // }
               }
             }
           }
@@ -369,14 +302,6 @@ class MapPage extends React.Component {
       {
         this.setState ({ updateFilter: true }); // cause render of filter
       }
-
-      // console.log("onFilterChg - 2 minYearMode=", minYearMode, ", prevYearMinMode=",
-      //   this.prevYearMinMode, ", maxYearMode=", maxYearMode,
-      //   ", prevYearMaxMode=", this.prevYearMaxMode);
-      //
-      // console.log("onFilterChg - 3 minYr=" + this.minYearColor + ", prevMinYr=" +
-      //   this.prevMinYearColor + ", maxYr=" + this.maxYearColor +
-      //   ", prevMaxYr=" + this.prevMaxYearColor);
 
       this.prevMinYearColor = this.minYearColor;
       this.prevMaxYearColor = this.maxYearColor;
@@ -486,7 +411,6 @@ class MapPage extends React.Component {
 
     if (okToFilter)
     {
-      console.log("onFilterChg - Ok to filter is true");
       this.setState((prevState, currentProps) => {
           return { ...prevState, fakeDataFiltered: [...this.fakeData.filter(this.filterTheData)],
             updateFilter: false };
@@ -496,7 +420,6 @@ class MapPage extends React.Component {
 
   // Make this function pure and never update state here.
   render() {
-    console.log("MapPage ------ rendering filter and map, minYearColor=", this.minYearColor);
     return (
       <div>
         <Filter

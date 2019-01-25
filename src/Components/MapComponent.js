@@ -37,8 +37,6 @@ config.tileLayer = {
 export default class MapComponent extends React.Component {
   constructor(props) {
     super(props);
-    console.log("MapComp - props: ");
-    console.log(props);
 
     this.searchTerm = ''; // default
     this.bsr = 'buy';     // default
@@ -49,12 +47,10 @@ export default class MapComponent extends React.Component {
     {
       this.searchTerm = props.location.state.searchTerm;
       config.params.zoom = 9;
-      console.log("MapComp - search term = ", props.location.state.searchTerm);
     }
     if (props.location && props.location.state && props.location.state.bsr)
     {
       this.bsr = props.location.state.bsr;
-      console.log("MapComp - bsr term = ", props.location.state.bsr);
     }
 
     this.state = {
@@ -91,43 +87,23 @@ export default class MapComponent extends React.Component {
   }
 
 
-  // Don't call setState in here. The component is going away.
-  componentWillUnmount = () => {
-    // code to run just before unmounting the component
-    // this destroys the Leaflet map object & related event listeners
-    //this.state.map.remove();
-  };
-
-  // In React 17+, this method will be deprecated.
-  // It is ok to call setState here if it involves a synchronous state
-  // update. It is *NOT* ok to call setState here for async updates (use
-  // componentDidMount for that). See comment before
-  // componentWillReceiveProps for more info.
-  componentWillMount = () => {
-    console.log("cwm - lat=", this.currentLat, ", lng=",
-      this.currentLong, ", zoom=", this.state.currentZoomLevel);
-  }
-
-
   // Use this method for async state updates and render triggering, but be
   // careful not to get in an infinite loop; only update if a change occurred.
   componentDidMount = async () => {
     // code to run just after the component "mounts" / DOM elements are created
-    console.log("cdm - entered, this.bsr=" + this.bsr);
 
     // create the Leaflet map object
     if (!this.state.map)
     {
       await this.init(this._mapNode);
 
-
 /*
 Flickr url has the form:
 https://farm{farm-id}.staticflickr.com/{server-id}/{id}_{secret}_[mstzb].jpg
 like: "https://farm2.staticflickr.com/1833/44104167362_d80021358b_m.jpg",
 where you have to get the various fields from a previous search (and its
-returned json). {secret} is your api key (not secret?); mstzb are letters you can
-provide for sizing control (m=small, 240px on longest side). Experiment with these.
+returned json). {secret} is your api key; mstzb are letters you can
+provide for sizing control (m=small, 240px on longest side).
 What I did: used the python script I created called getFlickrUrls.py to create
 a json file of urls, then used viewPix.py to view download each file,
 then manually looked at each file to see if it was a usable good picture.
@@ -167,35 +143,15 @@ a few hundred good URLs this way and saved them to houseImages.json.
 
       this._mapNode.leafletElement.addControl(this.searchControl);
 
-      // Add event handler to capture new latlng when user pans map.
-      // NOTE: this function caused problems; didn't need it anyway.
-      // this._mapNode.leafletElement.on("moveend",  () => {
-      //   const latlng = this.state.map.getCenter(); // map is ok here, we're in the future
-      //   //console.log(latlng);
-      //   console.log("MoveEnd callback - zoom is " + this.state.currentZoomLevel.toString());
-      //   this.currentLat = latlng.lat;
-      //   this.currentLong = latlng.lng;
-      //   //this.currentZoom = this.state.currentZoomLevel;
-      // });
-
       // If the user provided a search term, search for the latlng
       // of that term. Use the leaflet geocoder plugin for this.
       if (this.searchTerm) {
         const results = await this.provider.search({ query: this.searchTerm });
-        console.log ("cdm - Searching for " + this.searchTerm +
-          ", results = " + results);
         if (results.length > 0) {
           this.currentLat = results[0].y;
           this.currentLong = results[0].x;
-          console.log ("cdm - lat=" + this.currentLat.toString() +
-            ", lng=" + this.currentLong.toString());
-          // this.currentZoom = 9;
-          console.log (results);
-          // this.setState ({ coordsUpdated : true}); // trigger render
           // this is 1st render, plus user wants to search, so zoom
-          this.setState ({ coordsUpdated : true,
-            currentZoomLevel: 9}); // trigger render
-          //this._mapNode.leafletElement.on('geosearch/showlocation', yourEventHandler)
+          this.setState ({ coordsUpdated : true, currentZoomLevel: 9});
         }
         else {
           // Get the user's current coords from the browser; the browser will ask
@@ -203,33 +159,20 @@ a few hundred good URLs this way and saved them to houseImages.json.
           // have to do this once when the map is initialized.
           // Getting the user coords is asynchronous, so it will return later
           // and set a state variable.
-          console.log ("cdm - Search provider failed, going to use current coords");
           await navigator.geolocation.getCurrentPosition((location) => {
             this.currentLat = location.coords.latitude;
             this.currentLong = location.coords.longitude;
             //this.currentZoom = 9; //location.coords.accuracy;
-            console.log (location);
-            // this.setState ({ coordsUpdated : true }); // trigger render
-            this.setState ({ coordsUpdated : true,
-              currentZoomLevel: 9}); // trigger render
+            this.setState ({ coordsUpdated : true, currentZoomLevel: 9});
           });
         }
       }
-      console.log("cdm - about to pan to " +
-        this.currentLat.toString() + ", " + this.currentLong.toString());
       if (this._mapNode) {
         this._mapNode.leafletElement.panTo([this.currentLat, this.currentLong],
           { animate: true, duration: 1.0 });
       }
     }
-    console.log("cdm - exit");
   };
-
-  // showMap = (err, data) => {
-  //   console.log('ShowMap results:');
-  //   console.log(err);
-  //   console.log(data);
-  // }
 
   updateMarkers = (fakeData) =>
   {
@@ -243,8 +186,6 @@ a few hundred good URLs this way and saved them to houseImages.json.
 
       // Add markers to an array:
       let markerArray = [];
-      //console.log("updateMarkers - length of oldProps fakeData = ", this.props.fakeData.length);
-      console.log("updateMarkers - length of new fakeData = ", fakeData.length);
       for (let data of fakeData)
       {
         let zipStr = (data.zip < 10000 ? '0' + data.zip.toString() :
@@ -252,7 +193,6 @@ a few hundred good URLs this way and saved them to houseImages.json.
         let bedsText = data.beds > 1 ? ' beds, ' : ' bed, ';
         let bathsText = data.baths > 1 ? ' baths, ' : ' bath, ';
         let priceExtra = this.bsr === 'buy' ? '</b><br/>' : '</b> per month<br/>'
-        //console.log (data);
         // Added width styling to force img to 280px wide max, because the default
         // popup width is 300. This seemed to make all the images fit well, even
         // altering the height to make it fit right.
@@ -278,7 +218,6 @@ a few hundred good URLs this way and saved them to houseImages.json.
   // the lifecycle advances. Use componentDidUpdate if you want to update state
   // asynchronously when props change!
   componentWillReceiveProps = nextprops => {
-    //console.log("CWRP - props=", nextprops);
     this.updateMarkers(nextprops.fakeData);
   }
 
@@ -298,12 +237,6 @@ a few hundred good URLs this way and saved them to houseImages.json.
   //   controlLayers.addOverlay(geojsonLayer, 'name of it');
   async init(id) {
     if (this.state.map) return;
-
-    // console.log("init - entered");
-    // console.log('Current window pathname: ' + window.location.pathname);
-    // console.log('Current doc pathname: ' + document.location.pathname);
-    // console.log('Current directory: ' + process.cwd());
-    // console.log('public url: ', process.env.REACT_APP_PUBLIC_URL);
 
     // this function creates the Leaflet map object and is called after the Map component mounts
     const leafletMap = id.leafletElement;
@@ -326,17 +259,11 @@ a few hundred good URLs this way and saved them to houseImages.json.
     leafletMap.on("zoomend", e => {
       const updatedZoomLevel = leafletMap.getZoom();
       this.handleZoomLevelChange(updatedZoomLevel);
-      // console.log("new zoom is ", updatedZoomLevel, ", local state=", this.state);
-      // console.log("new zoom is ", updatedZoomLevel, ", store state=", this.props.mapData);
     });
-
-    // console.log("init - exited");
   }
 
   handleZoomLevelChange = newZoomLevel => {
     this.setState({ currentZoomLevel: newZoomLevel });
-    // console.log("Zoom callback - zoom is " + newZoomLevel.toString());
-    // console.log ("handleZoomLevelChange - layerData = ", this.state.layerData);
   };
 
   // Make this function pure and never update state here.

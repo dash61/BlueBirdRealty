@@ -58,8 +58,6 @@ const optionType = [
 export default class Filter extends React.Component {
   constructor(props) {
     super(props);
-    console.log("Filter - props: ");
-    console.log(props);
     this.bsr = 'buy';     // default
 
     // Do this first, to see if we got passed a search string.
@@ -67,7 +65,6 @@ export default class Filter extends React.Component {
     if (props.location && props.location.state && props.location.state.bsr)
     {
       this.bsr = props.location.state.bsr;
-      console.log("Filter - bsr term = ", props.location.state.bsr);
     }
 
     this.state = {
@@ -102,7 +99,6 @@ export default class Filter extends React.Component {
     //   let [key, value] = Object.entries(event.target)[0];
     //   spanText = value.child ? value.child.stateNode.innerHTML :
     //     value.stateNode.innerHTML;
-    //   console.log("onChangePrice - spanText = ", spanText)
     // }
     this.setState({ 'priceValue': spanText });
     this.props.onFilterChange({ 'price': spanText })
@@ -118,7 +114,6 @@ export default class Filter extends React.Component {
 
   onChangeBath = (event, data) => {
     let spanText = "Baths";
-    //console.log(data);
     if (data.value !== '') // ie, user hit X button to clear filter
       spanText = optionBaths[data.value]['text'];
     this.setState({ 'bathValue': spanText });

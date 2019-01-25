@@ -19,7 +19,6 @@ export default class SellForm extends React.Component
   render () {
     if (this.state.redirect)
     {
-      console.log("SellForm, render, redirecting to home");
       return <Redirect push to={{pathname: "/"}} />;
     }
     return (
