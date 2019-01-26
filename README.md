@@ -3,8 +3,6 @@
 
 Sample React website for a fictitious real estate company.
 
-This project is still under construction.
-
 It uses:
 
 - Semantic UI
