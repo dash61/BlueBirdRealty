@@ -176,49 +176,36 @@ a few hundred good URLs this way and saved them to houseImages.json.
 
   updateMarkers = (fakeData) =>
   {
-    if (true) {
-      if (this.markerCluster) {
-        this._mapNode.leafletElement.removeLayer (this.markerCluster);
-        this.markercluster = null;
-      }
-
-      this.markerCluster = L.markerClusterGroup(); // create the cluster group (now empty)
-
-      // Add markers to an array:
-      let markerArray = [];
-      for (let data of fakeData)
-      {
-        let zipStr = (data.zip < 10000 ? '0' + data.zip.toString() :
-          data.zip.toString());
-        let bedsText = data.beds > 1 ? ' beds, ' : ' bed, ';
-        let bathsText = data.baths > 1 ? ' baths, ' : ' bath, ';
-        let priceExtra = this.bsr === 'buy' ? '</b><br/>' : '</b> per month<br/>'
-        // Added width styling to force img to 280px wide max, because the default
-        // popup width is 300. This seemed to make all the images fit well, even
-        // altering the height to make it fit right.
-        let popup = '<img style="width:280px" src=' + data.image + '/>' +
-         '<br/><b>$ ' + data.price + priceExtra +
-          data.beds + bedsText + data.baths + bathsText +
-          data.sqft + ' sq. ft., built ' + data.yearBuilt + '<br/>' +
-          data.streetAddr + ', ' + data.city + ', ' + data.state +
-          ' ' + zipStr + '<br/>Agent: ' + data.name;
-        markerArray.push (L.marker([data.lat, data.lng],
-          { icon: this.smallIcon }).bindPopup(popup));
-      }
-      this.markerCluster.addLayers(markerArray);
-      this._mapNode.leafletElement.addLayer (this.markerCluster);
+    if (this.markerCluster) {
+      this._mapNode.leafletElement.removeLayer (this.markerCluster);
+      this.markercluster = null;
     }
-  }
 
-  // NOTE - this function is being deprecated. Use componentDidUpdate instead.
-  // From: https://medium.com/@nimelrian/as-of-react-16-you-should-use-componentwillreceiveprops-only-to-update-state-synchronously-as-in-a9d66457c510
-  // As of React 16, you should use componentWillReceiveProps only to update
-  // state synchronously (as in: Don’t dispatch requests/set timeouts here!).
-  // With Fiber, the componentWill* methods may be called multiple times before
-  // the lifecycle advances. Use componentDidUpdate if you want to update state
-  // asynchronously when props change!
-  componentWillReceiveProps = nextprops => {
-    this.updateMarkers(nextprops.fakeData);
+    this.markerCluster = L.markerClusterGroup(); // create the cluster group (now empty)
+
+    // Add markers to an array:
+    let markerArray = [];
+    for (let data of fakeData)
+    {
+      let zipStr = (data.zip < 10000 ? '0' + data.zip.toString() :
+        data.zip.toString());
+      let bedsText = data.beds > 1 ? ' beds, ' : ' bed, ';
+      let bathsText = data.baths > 1 ? ' baths, ' : ' bath, ';
+      let priceExtra = this.bsr === 'buy' ? '</b><br/>' : '</b> per month<br/>'
+      // Added width styling to force img to 280px wide max, because the default
+      // popup width is 300. This seemed to make all the images fit well, even
+      // altering the height to make it fit right.
+      let popup = '<img style="width:280px" src=' + data.image + '/>' +
+       '<br/><b>$ ' + data.price + priceExtra +
+        data.beds + bedsText + data.baths + bathsText +
+        data.sqft + ' sq. ft., built ' + data.yearBuilt + '<br/>' +
+        data.streetAddr + ', ' + data.city + ', ' + data.state +
+        ' ' + zipStr + '<br/>Agent: ' + data.name;
+      markerArray.push (L.marker([data.lat, data.lng],
+        { icon: this.smallIcon }).bindPopup(popup));
+    }
+    this.markerCluster.addLayers(markerArray);
+    this._mapNode.leafletElement.addLayer (this.markerCluster);
   }
 
   // From leaflet docs: "There are two types of layers: (1) base layers that are mutually exclusive
@@ -274,7 +261,7 @@ a few hundred good URLs this way and saved them to houseImages.json.
     return (
       <div id="map-component">
         <Map
-          ref={m => (this._mapNode = m)} // in React, this is a 'callback ref'
+          ref={m => (this._mapNode = m)} // leaflet needs the node
           center={config.params.center}
           zoom={config.params.zoom}
           maxZoom={config.params.maxZoom}

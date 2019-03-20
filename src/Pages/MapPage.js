@@ -37,9 +37,7 @@ class MapPage extends React.Component {
     this.prevSqftMinMode = 0;
     this.prevSqftMaxMode = 0;
     this.filterObj = {}; // for use in filtering map data
-    //this.fakeDataFiltered = [];
     this.state = {
-      //fakeDataUpdated: false,
       fakeDataFiltered: [],
       updateFilter: false
     }
@@ -53,6 +51,7 @@ class MapPage extends React.Component {
   // NOTE - this function is being deprecated.
   componentWillMount = () => {
 
+    // Generate all fake data I need.
     this.fakeData = _.times(17000, (i) => {
       return ({
         name: faker.name.firstName() + ' ' + faker.name.lastName(),

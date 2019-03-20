@@ -1,4 +1,3 @@
-//import PropTypes from 'prop-types'
 import React from 'react'
 import {
   Button,
@@ -19,6 +18,7 @@ import './HomePage.css';
 import faker from 'faker';
 import _ from 'lodash';
 
+
 /* eslint-disable react/no-multi-comp */
 
 export default class HomePage extends React.Component
@@ -31,26 +31,30 @@ export default class HomePage extends React.Component
       redirect: false
     };
     this.searchTerm = "";
+    this.avatar1 = faker.image.avatar();
+    this.avatar2 = faker.image.avatar();
   }
+
   handleChange = (e, { value }) => this.setState({ bsrValue: value });
-  avatar1 = faker.image.avatar();
-  avatar2 = faker.image.avatar();
   showModal = () => this.setState({ openModal: true });
   closeModal = () => this.setState({ openModal: false });
+
   searchTermChanging = (e) => {
     this.searchTerm = e.target.value;
   }
+
   handleSearchKeyPress = (e) => {
     if (e.key === 'Enter') {
       this.setState({ redirect: true });
     }
   }
+
   searchNow = (e) => {
     e.preventDefault();
     this.setState({ redirect: true });
   }
 
-    // Generate some data - 3 data pieces for the 3 "new listings" area.
+  // Generate some data - 3 data pieces for the 3 "new listings" area.
 	addresses = _.times(3, () => {
       return ({
         streetNum: faker.address.streetAddress(),
@@ -65,7 +69,6 @@ export default class HomePage extends React.Component
   render() {
     // Handle if search bar action caused redirect to map or sell pages
     if (this.state.redirect) {
-      //this.setState({ redirect: false }); // reset
       if (this.state.bsrValue === 'sell')
       {
         return <Redirect push to={{pathname: "/sell",

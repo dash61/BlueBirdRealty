@@ -26,10 +26,6 @@ ReactDOM.render(
   </BrowserRouter>,
   document.getElementById('root')
 );
-/* NavHdrFtr used to include path="/" */
-
-//tried: <Route path="/sell" render={(routeProps)=><SellPage {...routeProps} something={'foo'}/>}/>
-// didn't help NavHdrFtr get data I need.
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
