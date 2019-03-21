@@ -5,8 +5,7 @@ import 'semantic-ui/dist/semantic.min.css';
 import  { BrowserRouter, Route } from 'react-router-dom';
 import NavHdrFtr from './Components/NavHdrFtr';
 import HomePage from './Pages/HomePage';
-import LoginPage from './Pages/LoginPage';
-import SignUpPage from './Pages/SignUpPage';
+import AuthPage from './Pages/AuthPage';
 import MapPage from './Pages/MapPage';
 import SellPage from './Pages/SellPage';
 import './index.css'; // include this *after* semantic.min.css!
@@ -17,8 +16,7 @@ ReactDOM.render(
   <BrowserRouter forceRefresh={!supportsHistory}>
     <NavHdrFtr>
       <Route exact path="/" component={HomePage} />
-      <Route path="/login" component={LoginPage} />
-      <Route path="/signup" component={SignUpPage} />
+      <Route path="/auth/:type" component={AuthPage} />
       <Route path="/sell" component={SellPage} />
       <Route path="/map1" component={MapPage} />
       <Route path="/map2" component={MapPage} />

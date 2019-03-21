@@ -152,13 +152,13 @@ class DesktopContainer extends React.Component {
                       <Dropdown.Item icon='settings' text='Account Settings' />
                     </Dropdown.Menu>
                   </Dropdown>
-                  <Button as={Link} to='/login' inverted={!fixed}
+                  <Button as={Link} to='/auth/login' inverted={!fixed}
                     name='blah' onClick={this.handleItemClick}
                     style={{ marginLeft: '0.5em', position: 'absolute',
                       right: '130px'}}>
                     Log in
                   </Button>
-                  <Button as={Link} to='/signup' inverted={!fixed}
+                  <Button as={Link} to='/auth/signup' inverted={!fixed}
                     primary={fixed} name='blah2' onClick={this.handleItemClick}
                     style={{ marginLeft: '0.5em', position: 'absolute',
                       right: '20px'}}>
@@ -215,8 +215,8 @@ class MobileContainer extends React.Component {
                 <Dropdown.Item icon='settings' text='Account Settings' />
               </Dropdown.Menu>
             </Dropdown>
-            <Menu.Item as={Link} to='/login'>Log in</Menu.Item>
-            <Menu.Item as={Link} to='/signup'>Sign Up</Menu.Item>
+            <Menu.Item as={Link} to='/auth/login'>Log in</Menu.Item>
+            <Menu.Item as={Link} to='/auth/signup'>Sign Up</Menu.Item>
           </Sidebar>
 
           <Sidebar.Pusher

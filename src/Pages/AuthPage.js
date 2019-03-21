@@ -11,12 +11,52 @@ import {
 } from "semantic-ui-react";
 import { NavLink } from 'react-router-dom';
 
+// Strings that differentiate btw login and signup versions of this page.
+const choices = [
+  {
+    title: "Log-in to your account",
+    button1: "Log-In",
+    button2a: "New to us?",
+    button2b: " Sign Up",
+    path: '/auth/signup',
+    final: 'You are logged into your account!',
+  },
+  {
+    title: "Sign into your account",
+    button1: "Sign Up",
+    button2a: "Have an account?",
+    button2b: " Log In",
+    path: '/auth/login',
+    final: 'You are now signed up!',
+  }
+];
 
-export default class SignUpPage extends React.Component {
-  state = { open: false };
+export default class AuthPage extends React.Component {
+  constructor(props)
+  {
+    super(props);
+    console.log("Auth page ctor - props=", props);
+    this.state = { open: false, update: 0 };
+    if (this.props.match.params.type === 'signup')
+      this.state.update = 1;
+  }
 
   show = () => this.setState({ open: true });
   close = () => this.setState({ open: false });
+
+  // We need this to capture the update when the user switches between
+  // login and signup (or visa-versa) while on one of these pages.
+  // This seems to be the only signal that the route switch has occurred.
+  // So we manually update our choice variable to the opposite state.
+  componentWillReceiveProps = (nextProps) => {
+    //console.log("Auth - cwrp, nextProps=", nextProps.match.params.type);
+    if (nextProps.match.params.type === 'login' && this.state.update === 1) {
+      this.setState({ update: 0 });
+    }
+    else if (nextProps.match.params.type === 'signup' && this.state.update === 0) {
+      this.setState({ update: 1 });
+    }
+  }
 
   render() {
     const { open } = this.state;
@@ -42,8 +82,8 @@ export default class SignUpPage extends React.Component {
         >
           <Grid.Column style={{ maxWidth: 450 }}>
             <Header as="h2" color="teal" textAlign="center">
-              <Image src="/images/logo4.png" className="rounded" /> Sign into
-              your account
+              <Image src="/images/logo4.png" className="rounded" />
+                {choices[this.state.update].title}
             </Header>
             <Form size="large">
               <Segment stacked>
@@ -64,28 +104,25 @@ export default class SignUpPage extends React.Component {
                 <Button color="teal" fluid size="large"
                   onClick={this.show}
                 >
-                  Sign In
+                  {choices[this.state.update].button1}
                 </Button>
               </Segment>
             </Form>
             <Message>
-              Have an account?
-                <Message.Item basic size='medium'
-                  as={NavLink} to='/login'>&nbsp;&nbsp;Log In
-                </Message.Item>
+              {choices[this.state.update].button2a}
+              <Message.Item basic size='medium'
+                as={NavLink} to={choices[this.state.update].path}>&nbsp;&nbsp;
+                  {choices[this.state.update].button2b}
+              </Message.Item>
             </Message>
           </Grid.Column>
         </Grid>
 
-        <Modal
-          size={"mini"}
-          open={open}
-          onClose={this.close}
-          style={{ height: "auto" }}
-        >
+        <Modal size={"mini"} open={open} onClose={this.close}
+          style={{height:'auto'}}>
           <Modal.Header>Welcome</Modal.Header>
           <Modal.Content>
-            <p>You are now signed up!</p>
+            <p>{choices[this.state.update].final}</p>
           </Modal.Content>
           <Modal.Actions>
             <Button
