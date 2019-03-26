@@ -37,6 +37,7 @@ class MapPage extends React.Component {
     this.prevSqftMinMode = 0;
     this.prevSqftMaxMode = 0;
     this.filterObj = {}; // for use in filtering map data
+    this.okToFilter = false;
     this.state = {
       fakeDataFiltered: [],
       updateFilter: false
@@ -122,7 +123,7 @@ class MapPage extends React.Component {
 
   onFilterChange = async (obj) => {
     this.filterObj = obj;
-    let okToFilter = false;
+    this.okToFilter = false;
     let checkYear = false;
     let checkSqft = false;
     let savedKey = '';
@@ -222,7 +223,7 @@ class MapPage extends React.Component {
           {
             //this.yearMinReal = this.yearMin;
             this.yearMin = YEARMIN;
-            okToFilter = true;
+            this.okToFilter = true;
           }
         }
         else  // min year has 4 digits or more
@@ -235,7 +236,7 @@ class MapPage extends React.Component {
               if (this.yearMin !== YEARMIN)
               {
                 minYearMode = 4;
-                okToFilter = true;
+                this.okToFilter = true;
               }
             }
           }
@@ -245,7 +246,7 @@ class MapPage extends React.Component {
             if (this.yearMin !== YEARMIN)
             {
               minYearMode = 4;
-              okToFilter = true;
+              this.okToFilter = true;
             }
           }
         }
@@ -259,7 +260,7 @@ class MapPage extends React.Component {
           {
             //this.yearMaxReal = this.yearMax;
             this.yearMax = YEARMAX;
-            okToFilter = true;
+            this.okToFilter = true;
           }
         }
         else
@@ -272,7 +273,7 @@ class MapPage extends React.Component {
               if (this.yearMax !== YEARMAX)
               {
                 maxYearMode = 4;
-                okToFilter = true;
+                this.okToFilter = true;
               }
             }
           }
@@ -282,7 +283,7 @@ class MapPage extends React.Component {
             if (this.yearMax !== YEARMAX)
             {
               maxYearMode = 4;
-              okToFilter = true;
+              this.okToFilter = true;
             }
           }
         }
@@ -320,7 +321,7 @@ class MapPage extends React.Component {
           if (this.prevSqftMinMode === 4)
           {
             this.sqftMin = SQFTMIN;
-            okToFilter = true;
+            this.okToFilter = true;
           }
         }
         else  // min sqft has 4 digits or more
@@ -333,7 +334,7 @@ class MapPage extends React.Component {
               if (this.sqftMin !== SQFTMIN)
               {
                 minSqftMode = 4;
-                okToFilter = true;
+                this.okToFilter = true;
               }
             }
           }
@@ -343,7 +344,7 @@ class MapPage extends React.Component {
             if (this.sqftMin !== SQFTMIN)
             {
               minSqftMode = 4;
-              okToFilter = true;
+              this.okToFilter = true;
             }
           }
         }
@@ -356,7 +357,7 @@ class MapPage extends React.Component {
           if (this.prevSqftMaxMode === 4)
           {
             this.sqftMax = SQFTMAX;
-            okToFilter = true;
+            this.okToFilter = true;
           }
         }
         else
@@ -369,7 +370,7 @@ class MapPage extends React.Component {
               if (this.sqftMax !== SQFTMAX)
               {
                 maxSqftMode = 4;
-                okToFilter = true;
+                this.okToFilter = true;
               }
             }
           }
@@ -379,7 +380,7 @@ class MapPage extends React.Component {
             if (this.sqftMax !== SQFTMAX)
             {
               maxSqftMode = 4;
-              okToFilter = true;
+              this.okToFilter = true;
             }
           }
         }
@@ -405,10 +406,10 @@ class MapPage extends React.Component {
       this.prevSqftMaxMode = maxSqftMode;
     }
     else {
-      okToFilter = true; // for non-year and non-sqft situations
+      this.okToFilter = true; // for non-year and non-sqft situations
     }
 
-    if (okToFilter)
+    if (this.okToFilter)
     {
       this.setState((prevState, currentProps) => {
           return { ...prevState, fakeDataFiltered: [...this.fakeData.filter(this.filterTheData)],
@@ -433,7 +434,7 @@ class MapPage extends React.Component {
           <MapComponent
             {...this.props}
             fakeData={this.state.fakeDataFiltered}
-            fakeDataUpdated={true}
+            fakeDataUpdated={this.okToFilter}
           />
         </Container>
       </div>

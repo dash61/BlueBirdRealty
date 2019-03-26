@@ -34,7 +34,7 @@ config.tileLayer = {
 };
 
 
-export default class MapComponent extends React.Component {
+export default class MapComponent extends React.PureComponent {
   constructor(props) {
     super(props);
 
@@ -255,6 +255,10 @@ a few hundred good URLs this way and saved them to houseImages.json.
 
   // Make this function pure and never update state here.
   render() {
+    if (this._mapNode && this.props.fakeDataUpdated)
+    {
+      this.updateMarkers(this.props.fakeData);
+    }
     config.params.center = [this.currentLat, this.currentLong];
     config.params.zoom = this.state.currentZoomLevel;
 
