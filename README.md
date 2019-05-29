@@ -9,6 +9,11 @@ It uses:
 - Leaflet (for mapping)
 
 
+## Screenshot
+
+![screenshot](https://i.imgur.com/VNnAzuA.png)
+
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 
