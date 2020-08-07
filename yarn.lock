@@ -5217,10 +5217,10 @@ esrecurse@^4.1.0:
   dependencies:
     estraverse "^4.1.0"
 
-esri-leaflet@^2.4.1:
-  version "2.4.1"
-  resolved "https://registry.yarnpkg.com/esri-leaflet/-/esri-leaflet-2.4.1.tgz#df9fde64dff259c3c930ce16b8fcf6516dba0832"
-  integrity sha512-0ukZIhA9dVx8yYe/ahp2yZm7GmUYTxPktXXHBVPBZoe9I00fkhLsEk2dIt1xa7XsCk/gH+Breb9L5lNALC+Niw==
+esri-leaflet@^2.5.0:
+  version "2.5.0"
+  resolved "https://registry.yarnpkg.com/esri-leaflet/-/esri-leaflet-2.5.0.tgz#ab800a57903fabdf7d9d84715b55546f976a3683"
+  integrity sha512-c8rsE4op7sSVGX4/u3SBzbRU7BaR/4oL63+1ReBuUdFFdYMmMZjSkUOsrAOo59Jh8cRM5NB3MiHBCNAlNr/CsQ==
   dependencies:
     "@terraformer/arcgis" "^2.0.7"
     tiny-binary-search "^1.0.3"
