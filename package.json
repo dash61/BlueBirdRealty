@@ -4,7 +4,7 @@
   "private": true,
   "dependencies": {
     "esri-leaflet": "^2.5.0",
-    "faker": "^4.1.0",
+    "faker": "^5.0.0",
     "leaflet": "^1.6.0",
     "leaflet-dvf": "^0.3.1",
     "leaflet-geosearch": "^3.0.6",
