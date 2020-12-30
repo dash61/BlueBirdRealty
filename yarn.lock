@@ -5634,10 +5634,10 @@ esrecurse@^4.3.0:
   dependencies:
     estraverse "^5.2.0"
 
-esri-leaflet@^2.5.1:
-  version "2.5.1"
-  resolved "https://registry.yarnpkg.com/esri-leaflet/-/esri-leaflet-2.5.1.tgz#b473785d0459960a91934c4f8ea8e5512dd9145e"
-  integrity sha512-AW20oUuH4Co5qv+4rRtueHLczeqgYnJblv1KY1PLQgJrzeusT9ZgDXPi/esMeb3yN2PC2JL5BZIhlfzRegVDXA==
+esri-leaflet@^2.5.2:
+  version "2.5.2"
+  resolved "https://registry.yarnpkg.com/esri-leaflet/-/esri-leaflet-2.5.2.tgz#1925bca6d3658e14fc9014fb09ab0c7d3c266f4f"
+  integrity sha512-w2t91WJ43RxonG810V/3Q+krxCbY/jHMSZC+4VcgS4DZhnAiYRnrDrjf1F2q+a1NVwSmQTWBBUkSJHq8JY2mVg==
   dependencies:
     "@terraformer/arcgis" "^2.0.7"
     tiny-binary-search "^1.0.3"
