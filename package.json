@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "esri-leaflet": "^3.0.0",
+    "esri-leaflet": "^3.0.1",
     "faker": "^5.4.0",
     "leaflet": "^1.7.1",
     "leaflet-dvf": "^0.3.1",
