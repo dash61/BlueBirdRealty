@@ -9655,10 +9655,10 @@ leaflet-dvf@^0.3.1:
   resolved "https://registry.yarnpkg.com/leaflet-dvf/-/leaflet-dvf-0.3.1.tgz#be4989b9f49beb4725aa4dc1329d4211f136c838"
   integrity sha1-vkmJufSb60clqk3BMp1CEfE2yDg=
 
-leaflet-geosearch@^3.5.0:
-  version "3.5.0"
-  resolved "https://registry.yarnpkg.com/leaflet-geosearch/-/leaflet-geosearch-3.5.0.tgz#c02ee66135f37d46ed0600890f27b81925d459aa"
-  integrity sha512-Oj1xRIobj+pOxnHDAaQtOIw6efRNiLQcg3QUnbXtMIGUJ4pXDSUUJ9Z8EEd3CHQv8NULrn1cfsbH+Afer3uzjA==
+leaflet-geosearch@^3.5.2:
+  version "3.5.2"
+  resolved "https://registry.yarnpkg.com/leaflet-geosearch/-/leaflet-geosearch-3.5.2.tgz#609de940ea27f9202f8c25d4a75edc1ffbbb29b6"
+  integrity sha512-fMB6j43ituVkw7zzsn0sEzQ6KTArs4KsyXfs1jRlUTGoJkeWx6pe19YBuIgsoakpSHWAZpAGJuxIWRW8cjueyA==
   optionalDependencies:
     leaflet "^1.6.0"
 
