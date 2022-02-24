@@ -2444,10 +2444,10 @@
     "@svgr/plugin-svgo" "^5.5.0"
     loader-utils "^2.0.0"
 
-"@terraformer/arcgis@^2.0.7":
-  version "2.0.7"
-  resolved "https://registry.yarnpkg.com/@terraformer/arcgis/-/arcgis-2.0.7.tgz#617e6056a64b7328d4827702d64d0ccfc2e96d17"
-  integrity sha512-7jIQcnd8RnKsDt1IxmEjq9t7l5fnf0e5c+c1+1GjG4NR+TY0XkJcWtrBv0DWd65uAlDiQYMlEG8ls5dz1GQiuA==
+"@terraformer/arcgis@^2.1.0":
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/@terraformer/arcgis/-/arcgis-2.1.0.tgz#23d5822bd71e3d940da3e62d391b42628d35d2ef"
+  integrity sha512-eKTvNXze2Fo7vAEjvJFIGn5QdU0OP4aD9DuT/uTBLRM1QS+ju7KtPITbVW+xgCviHLnOVeFQ1UsIs9kjkakD4g==
   dependencies:
     "@terraformer/common" "^2.0.7"
 
@@ -5822,12 +5822,12 @@ esrecurse@^4.3.0:
   dependencies:
     estraverse "^5.2.0"
 
-esri-leaflet@^3.0.4:
-  version "3.0.4"
-  resolved "https://registry.yarnpkg.com/esri-leaflet/-/esri-leaflet-3.0.4.tgz#399d8422da453f59b658394f0ea2a69ea42a9c76"
-  integrity sha512-K/nnrlu9DUptYWQtBxGRVCFxJA8GSSyw6KNH/onxQ7jmuKMoS3rzV6kAntFv5bF/Iued3hqRXxbPnQD7oDcrAg==
+esri-leaflet@^3.0.6:
+  version "3.0.6"
+  resolved "https://registry.yarnpkg.com/esri-leaflet/-/esri-leaflet-3.0.6.tgz#fc885d5aef13ac5dc6e0d81bdb996b7b7c5a9e73"
+  integrity sha512-nrGHoIXB9wZ7uUvx1k2kMZbGKjSeeqINv3V5yk/avEF6IhudMlNiVwwBO0BSMNkPnNc0+Ft7eJBlYCQWH/uXaw==
   dependencies:
-    "@terraformer/arcgis" "^2.0.7"
+    "@terraformer/arcgis" "^2.1.0"
     tiny-binary-search "^1.0.3"
 
 estraverse@^4.1.1:
