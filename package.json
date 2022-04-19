@@ -5,7 +5,7 @@
   "dependencies": {
     "esri-leaflet": "^3.0.8",
     "faker": "^6.6.6",
-    "leaflet": "^1.7.1",
+    "leaflet": "^1.8.0",
     "leaflet-dvf": "^0.3.1",
     "leaflet-geosearch": "^3.6.0",
     "leaflet.markercluster": "^1.5.3",
