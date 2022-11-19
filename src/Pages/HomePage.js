@@ -12,10 +12,9 @@ import {
   Radio,
   Segment,
 } from 'semantic-ui-react';
-import { Link } from 'react-router-dom';
-import { Redirect } from 'react-router';
+import { Link, Navigate } from 'react-router-dom';
 import './HomePage.css';
-import faker from 'faker';
+import { faker } from '@faker-js/faker';
 import _ from 'lodash';
 
 
@@ -58,7 +57,7 @@ export default class HomePage extends React.Component
 	addresses = _.times(3, () => {
       return ({
         streetNum: faker.address.streetAddress(),
-        streetName: faker.address.streetName(),
+        streetName: faker.address.street(),
         city: faker.address.city(),
         state: faker.address.stateAbbr(),
         zip: faker.address.zipCode()
@@ -67,23 +66,17 @@ export default class HomePage extends React.Component
 
 
   render() {
-    // Handle if search bar action caused redirect to map or sell pages
+    // Handle if search bar action caused redirect to the map or sell pages.
     if (this.state.redirect) {
-      if (this.state.bsrValue === 'sell')
-      {
-        return <Redirect push to={{pathname: "/sell",
-          state: { searchTerm: "",
-            bsr: this.state.bsrValue } }} />;
+      if (this.state.bsrValue === 'sell') {
+        return <Navigate to={{pathname: "/sell" }} />;
       }
-      else if (this.state.bsrValue === 'buy')
-      {
-        return <Redirect push to={{pathname: "/map1",
-          state: { searchTerm: this.searchTerm,
-            bsr: this.state.bsrValue } }} />;
+      else if (this.state.bsrValue === 'buy') {
+        return <Navigate to="/map1"
+          state={{ searchTerm: this.searchTerm, bsr: this.state.bsrValue } } />;
       }
-      return <Redirect push to={{pathname: "/map2",
-        state: { searchTerm: this.searchTerm,
-          bsr: this.state.bsrValue } }} />;
+      return <Navigate to="/map2" 
+        state={{ searchTerm: this.searchTerm, bsr: this.state.bsrValue }} />;
     }
 
     return (
@@ -211,7 +204,7 @@ export default class HomePage extends React.Component
                 </Header>
                 <p style={{ fontSize: '1.33em' }}>
                   <Image avatar src={this.avatar1} />
-                  <b>{faker.name.findName()}</b>&nbsp;&nbsp;{faker.name.jobTitle()}
+                  <b>{faker.name.fullName()}</b>&nbsp;&nbsp;{faker.name.jobTitle()}
                 </p>
               </Grid.Column>
               <Grid.Column style={{ paddingBottom: '5em', paddingTop: '5em' }}>
@@ -220,7 +213,7 @@ export default class HomePage extends React.Component
                 </Header>
                 <p style={{ fontSize: '1.33em' }}>
                   <Image avatar src={this.avatar2} />
-                  <b>{faker.name.findName()}</b>&nbsp;&nbsp;{faker.name.jobTitle()}
+                  <b>{faker.name.fullName()}</b>&nbsp;&nbsp;{faker.name.jobTitle()}
                 </p>
               </Grid.Column>
             </Grid.Row>

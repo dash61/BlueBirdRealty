@@ -2,13 +2,14 @@ import React from 'react';
 import L from "leaflet";
 import 'leaflet.markercluster';
 import '../../node_modules/leaflet.markercluster/dist/MarkerCluster.Default.css';
-import "leaflet-dvf";
-import { basemapLayer } from "esri-leaflet"; // old: , tiledMapLayer
-import { Map } from "react-leaflet"; // old: , TileLayer
+// // import "leaflet-dvf";
+// import { vectorBasemapLayer } from "esri-leaflet-vector"; // old: , tiledMapLayer, basemapLayer
+import { MapContainer, TileLayer } from "react-leaflet"; // old: , TileLayer
 import "../../node_modules/leaflet/dist/leaflet.css";
 import "./leaflet-control-geosearch.css";
 import "./MapPage.css";
 import { GeoSearchControl, OpenStreetMapProvider } from 'leaflet-geosearch';
+// import token from "../secrets.json";
 
 // store the map configuration properties in an object,
 // we could also move this to a separate file & import it if desired.
@@ -21,37 +22,33 @@ config.params = {
   imageBounds: [
     [48.1, -126.144], // latlng fmt
     [24.3, -69.35]
-  ]
+  ],
+  // version: 8,
 };
-config.tileLayer = {
-  params: {
-    id: "",
-    accessToken: process.env.REACT_APP_MAP_ACCESS_TOKEN,
-    noWrap: false,
-    continuousWorld: false,
-    bounds: [[-90, -180], [90, 180]] // keep from duplicating world map
-  }
-};
+// config.tileLayer = {
+//   params: {
+//     id: "",
+//     accessToken: token.MAP_ACCESS_TOKEN, // old, check later if we can eliminate this
+//     apiKey: token.MAP_ACCESS_TOKEN,
+//     // basemapEnum: "ArcGIS:Navigation", // added, see https://www.esri.com/arcgis-blog/products/developers/developers/open-source-developers-time-to-upgrade-to-the-new-arcgis-basemap-layer-service/#leaflet
+//     noWrap: false,
+//     continuousWorld: false,
+//     bounds: [[-90, -180], [90, 180]], // keep from duplicating world map
+//     // version: 8,
+//     // sources: {},
+//     // layers: {},
+//   }
+// };
 
 
 export default class MapComponent extends React.PureComponent {
   constructor(props) {
     super(props);
 
-    this.searchTerm = ''; // default
-    this.bsr = 'buy';     // default
+    console.log("mapComp - CTOR - props=", props);
 
-    // Do this first, to see if we got passed a search string.
-    // If we did, set the zoom to 9.
-    if (props.location && props.location.state && props.location.state.searchTerm)
-    {
-      this.searchTerm = props.location.state.searchTerm;
-      config.params.zoom = 9;
-    }
-    if (props.location && props.location.state && props.location.state.bsr)
-    {
-      this.bsr = props.location.state.bsr;
-    }
+    // See if we got passed a search string. If we did, set the zoom to 9.
+    config.params.zoom = props.searchTerm ? 9 : config.params.zoom;
 
     this.state = {
       currentZoomLevel: config.params.zoom,
@@ -59,12 +56,11 @@ export default class MapComponent extends React.PureComponent {
       visible: false, // this is from some old code that I copied that deals w/ markers; inside zoomend fn
       baseMap: null,  // this is the 'streets' layer that gets added to the map
       coordsUpdated: false, // set to true once coords are updated
+      initialized: false,
     };
     this.currentLat = config.params.center[0];
-    this.currentLong = config.params.center[1];
-    //this.currentZoom = config.params.zoom;
-    this._mapNode = null;
-    this.mapIsValid = false;
+    this.currentLng = config.params.center[1];
+    this.state.mapIsValid = false;
     this.markers = [];
     this.markerCluster = null;
     this.provider = new OpenStreetMapProvider();
@@ -72,9 +68,10 @@ export default class MapComponent extends React.PureComponent {
       provider: this.provider,
       style: 'button',
       showMarker: false,
-      retainZoomLevel: true,
+      zoomLevel: 9,
     });
-    // from another example:
+
+    // from some example:
     this.smallIcon = new L.Icon({
         iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-icon.png',
         iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-icon-2x.png',
@@ -86,16 +83,6 @@ export default class MapComponent extends React.PureComponent {
     });
   }
 
-
-  // Use this method for async state updates and render triggering, but be
-  // careful not to get in an infinite loop; only update if a change occurred.
-  componentDidMount = async () => {
-    // code to run just after the component "mounts" / DOM elements are created
-
-    // create the Leaflet map object
-    if (!this.state.map)
-    {
-      await this.init(this._mapNode);
 
 /*
 Flickr url has the form:
@@ -111,47 +98,50 @@ If it was, I kept it in the json file, otherwise I deleted it. I built up
 a few hundred good URLs this way and saved them to houseImages.json.
 */
 
+  componentDidUpdate = async () => {
+      if (!this.state.map) {
+        return;
+      }
+      console.log("mapComp - CDU - props=", this.props);
+
       this.updateMarkers(this.props.fakeData);
 
-      // Create the various layers for the map.
-      let esriNatGeo = basemapLayer(
-        "NationalGeographic",
-        config.tileLayer.params
-      );
-      //var esriStreets = basemapLayer("Streets", config.tileLayer.params);
-      let esriTopo = basemapLayer("Topographic", config.tileLayer.params);
-      let esriShadedRelief = basemapLayer(
-        "ShadedRelief",
-        config.tileLayer.params
-      );
-      let esriImagery = basemapLayer("Imagery", config.tileLayer.params);
-      let esriTerrain = basemapLayer("Terrain", config.tileLayer.params);
+//       // Create the various layers for the map.
+//       let esriNatGeo = vectorBasemapLayer("NationalGeographic", config.tileLayer.params);
 
-      // json object for layer switcher control basemaps
-      let baseLayers = {
-        "Esri Topographic": esriTopo, //this.state.baseMap,
-        "National Geographic": esriNatGeo,
-        Streets: this.state.baseMap, //esriStreets,
-        "Shaded Relief": esriShadedRelief,
-        Imagery: esriImagery,
-        Terrain: esriTerrain
-      };
+//       //var esriStreets = basemapLayer("Streets", config.tileLayer.params);
+//       let esriTopo = vectorBasemapLayer("Topographic", config.tileLayer.params);
+//       let esriShadedRelief = vectorBasemapLayer("ShadedRelief", config.tileLayer.params);
+//       let esriImagery = vectorBasemapLayer("Imagery", config.tileLayer.params);
+//       let esriTerrain = vectorBasemapLayer("Terrain", config.tileLayer.params);
 
-      // add layer groups to layer switcher control
-      let controlLayers = L.control.layers(baseLayers).addTo(this._mapNode.leafletElement);
-      controlLayers.setPosition("bottomright");
+//       // json object for layer switcher control basemaps
+//       let baseLayers = {
+//         "Esri Topographic": esriTopo, //this.state.baseMap,
+//         "National Geographic": esriNatGeo,
+//         Streets: this.state.baseMap, //esriStreets,
+//         "Shaded Relief": esriShadedRelief,
+//         Imagery: esriImagery,
+//         Terrain: esriTerrain
+//       };
 
-      this._mapNode.leafletElement.addControl(this.searchControl);
+//       // add layer groups to layer switcher control
+//       let controlLayers = L.control.layers(baseLayers).addTo(this.state.map);
+//       controlLayers.setPosition("bottomright");
+
+      this.state.map.addControl(this.searchControl);
 
       // If the user provided a search term, search for the latlng
       // of that term. Use the leaflet geocoder plugin for this.
-      if (this.searchTerm) {
-        const results = await this.provider.search({ query: this.searchTerm });
+      if (this.props.searchTerm) {
+        const results = await this.provider.search({ query: this.props.searchTerm });
+        console.log("MapComp - IF (top) - results=", results, this.props.searchTerm);
         if (results.length > 0) {
           this.currentLat = results[0].y;
-          this.currentLong = results[0].x;
+          this.currentLng = results[0].x;
           // this is 1st render, plus user wants to search, so zoom
-          this.setState ({ coordsUpdated : true, currentZoomLevel: 9});
+          this.setState ({ coordsUpdated : true, currentZoomLevel: 9},
+            () => { console.log("MapComp - (post setState) After setting zoom to 9")});
         }
         else {
           // Get the user's current coords from the browser; the browser will ask
@@ -161,42 +151,49 @@ a few hundred good URLs this way and saved them to houseImages.json.
           // and set a state variable.
           await navigator.geolocation.getCurrentPosition((location) => {
             this.currentLat = location.coords.latitude;
-            this.currentLong = location.coords.longitude;
-            //this.currentZoom = 9; //location.coords.accuracy;
+            this.currentLng = location.coords.longitude;
             this.setState ({ coordsUpdated : true, currentZoomLevel: 9});
+            console.log("MapComp - IF inside getCurrentPos - just set zoom=9");
           });
         }
+        console.log("MapComp - IF - should have set zoom=9");
+      } else {
+        this.currentLat = config.params.center[0];
+        this.currentLng = config.params.center[1];
+        this.setState({currentZoomLevel: config.params.zoom});
+        console.log("MapComp - ELSE - should have set zoom=", config.params.zoom)
       }
-      if (this._mapNode) {
-        this._mapNode.leafletElement.panTo([this.currentLat, this.currentLong],
-          { animate: true, duration: 1.0 });
+      if (this.state.map) {
+        this.state.map.panTo([this.currentLat, this.currentLng],
+          { animate: false, duration: 0 });
       }
-    }
   };
 
   updateMarkers = (fakeData) =>
   {
     if (this.markerCluster) {
-      this._mapNode.leafletElement.removeLayer (this.markerCluster);
+      this.state.map.removeLayer (this.markerCluster);
       this.markercluster = null;
     }
 
     this.markerCluster = L.markerClusterGroup(); // create the cluster group (now empty)
 
     // Add markers to an array:
-    let markerArray = [];
-    for (let data of fakeData)
+    const markerArray = [];
+    for (const data of fakeData)
     {
-      let zipStr = (data.zip < 10000 ? '0' + data.zip.toString() :
-        data.zip.toString());
-      let bedsText = data.beds > 1 ? ' beds, ' : ' bed, ';
-      let bathsText = data.baths > 1 ? ' baths, ' : ' bath, ';
-      let priceExtra = this.bsr === 'buy' ? '</b><br/>' : '</b> per month<br/>'
+      const zipStr = (data.zip < 10000 ? '0' + data.zip.toString() : data.zip.toString());
+      const bedsText = data.beds > 1 ? ' beds, ' : ' bed, ';
+      const bathsText = data.baths > 1 ? ' baths, ' : ' bath, ';
+      const price = (this.props.bsr === 'buy' ?
+        Math.floor(75 + Math.random() * 906) * 1000.0 : // 75k to 980k, buyer prices
+        Math.floor(250 + Math.random() * 4251));        // 250 to 4500, renter prices
+      const priceExtra = this.props.bsr === 'buy' ? '</b><br/>' : '</b> per month<br/>'
       // Added width styling to force img to 280px wide max, because the default
       // popup width is 300. This seemed to make all the images fit well, even
       // altering the height to make it fit right.
-      let popup = '<img style="width:280px" src=' + data.image + '/>' +
-       '<br/><b>$ ' + data.price + priceExtra +
+      const popup = '<img style="width:280px" src=' + data.image + '/>' +
+       '<br/><b>$ ' + price + priceExtra +
         data.beds + bedsText + data.baths + bathsText +
         data.sqft + ' sq. ft., built ' + data.yearBuilt + '<br/>' +
         data.streetAddr + ', ' + data.city + ', ' + data.state +
@@ -205,8 +202,8 @@ a few hundred good URLs this way and saved them to houseImages.json.
         { icon: this.smallIcon }).bindPopup(popup));
     }
     this.markerCluster.addLayers(markerArray);
-    this._mapNode.leafletElement.addLayer (this.markerCluster);
-  }
+    this.state.map.addLayer (this.markerCluster);
+  };
 
   // From leaflet docs: "There are two types of layers: (1) base layers that are mutually exclusive
   // (only one can be visible on your map at a time), e.g. tile layers, and (2) overlays, which are
@@ -222,56 +219,81 @@ a few hundred good URLs this way and saved them to houseImages.json.
   //   var controlLayers = L.control.layers().addTo(map);
   //   var geojsonLayer = L.geoJson(geojson, ...).addTo(map); // don't add to map if don't want to show initially, just create
   //   controlLayers.addOverlay(geojsonLayer, 'name of it');
-  async init(id) {
-    if (this.state.map) return;
 
-    // this function creates the Leaflet map object and is called after the Map component mounts
-    const leafletMap = id.leafletElement;
+//   async init(id) {
+//     console.log("map - init - map=", this.state.map, " id=", id);
 
-    // set our state to include the tile layer.
-    // DON'T USE this.state.map BELOW; WON'T WORK! (set state is async)
-    this.setState({ map: id.leafletElement }, () => {
-      this.mapIsValid = true;
-    });
+//     if (!this.state.map || this.state.initialized) return;
 
-    // a TileLayer is used as the "basemap"
-    //this.state.baseMap = L.tileLayer(config.tileLayer.uri, config.tileLayer.params).addTo(this.state.map);
-    this.setState({
-      baseMap: basemapLayer("Streets", config.tileLayer.params).addTo(
-        leafletMap
-      )
-    });
+//     // this function creates the Leaflet map object and is called after the Map component mounts
+//     const leafletMap = this.state.map; // id.leafletElement;
+//     console.log("map - init - id=", id, " initialized=", this.state.initialized);
 
-    leafletMap.fitBounds(config.params.imageBounds);
-    leafletMap.on("zoomend", e => {
-      const updatedZoomLevel = leafletMap.getZoom();
-      this.handleZoomLevelChange(updatedZoomLevel);
-    });
-  }
+//     // set our state to include the tile layer.
+//     // DON'T USE this.state.map BELOW; WON'T WORK! (set state is async)
+//     // this.setState({ map: id.leafletElement }, () => {
+//     //   this.state.mapIsValid = true;
+//     // });
+//     console.log("Map - init - about to call BasemapLayer, leafletMap=", leafletMap);
 
-  handleZoomLevelChange = newZoomLevel => {
-    this.setState({ currentZoomLevel: newZoomLevel });
-  };
+//     const obj = vectorBasemapLayer("Streets", config.tileLayer.params);
+//     console.log("Map - init - obj=", obj);
+//     const res = obj.addTo(leafletMap);
+//     console.log("Map - init - res=", res);
+//     this.setState({baseMap: res});
+//     // a TileLayer is used as the "basemap"
+//     //this.state.baseMap = L.tileLayer(config.tileLayer.uri, config.tileLayer.params).addTo(this.state.map);
+//     // this.setState({
+//     //   baseMap: BasemapLayer("Streets", config.tileLayer.params).addTo(
+//     //     leafletMap
+//     //   )
+//     // });
+//     console.log("Map - init - after setState for baseMap");
 
-  // Make this function pure and never update state here.
-  render() {
-    if (this._mapNode && this.props.fakeDataUpdated)
-    {
+//     leafletMap.fitBounds(config.params.imageBounds);
+//     console.log("Map - init - after fitBounds");
+//     leafletMap.on("zoomend", e => {
+//       const updatedZoomLevel = leafletMap.getZoom();
+//       this.handleZoomLevelChange(updatedZoomLevel);
+//     });
+//     console.log("Map - init - after leafletMap.on");
+//     this.setState({initialized: true});
+//   }
+
+//   handleZoomLevelChange = newZoomLevel => {
+//     this.setState({ currentZoomLevel: newZoomLevel });
+//   };
+
+
+render() {
+    if (this.state.map && this.props.fakeDataUpdated) {
       this.updateMarkers(this.props.fakeData);
     }
-    config.params.center = [this.currentLat, this.currentLong];
+    config.params.center = [this.currentLat, this.currentLng];
     config.params.zoom = this.state.currentZoomLevel;
+    console.log("MapComp - render - zoom =", config.params.zoom);
+    if (this.state.map) {
+      // this is needed when a zoom change doesn't cause the map to redraw.
+      this.state.map.setView(config.params.center, config.params.zoom);
+    }
 
     return (
       <div id="map-component">
-        <Map
-          ref={m => (this._mapNode = m)} // leaflet needs the node
+        <MapContainer
+          id="map"
+          ref={m => (this.setState({map: m}))}
           center={config.params.center}
           zoom={config.params.zoom}
           maxZoom={config.params.maxZoom}
           minZoom={config.params.minZoom}
           style={{ borderRadius: '6px'}}
-        />
+          scrollWheelZoom={false}
+        >
+          <TileLayer
+            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          />
+        </MapContainer>
       </div>
     );
   }

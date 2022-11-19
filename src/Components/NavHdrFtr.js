@@ -9,13 +9,13 @@ import {
   Icon,
   List,
   Menu,
-  Responsive,
+//   Responsive,
   Segment,
   Sidebar,
   Visibility,
 } from 'semantic-ui-react';
 import { Link, NavLink } from 'react-router-dom';
-import { Redirect } from 'react-router';
+import { Navigate } from 'react-router';
 import LogoAvatar from './LogoAvatar';
 
 /* Heads up!
@@ -27,7 +27,7 @@ import LogoAvatar from './LogoAvatar';
 const NavHdrFtr = ({ children }) => (
  <div>
    <DesktopContainer>{children}</DesktopContainer>
-   <MobileContainer>{children}</MobileContainer>
+   {/* <MobileContainer>{children}</MobileContainer> */}
    <Footer></Footer>
  </div>
 )
@@ -67,26 +67,23 @@ class DesktopContainer extends React.Component {
     if (this.state.redirect) {
       if (this.state.bsrValue === 'sell')
       {
-        return <Redirect push to={{pathname: "/sell",
-          state: { searchTerm: "",
-            bsr: this.state.bsrValue } }} />;
+        return <Navigate to="/sell"
+          state={{ searchTerm: "", bsr: this.state.bsrValue }} />;
       }
       else if (this.state.bsrValue === 'buy')
       {
-        return <Redirect push to={{pathname: "/map1",
-          state: { searchTerm: "",
-            bsr: this.state.bsrValue } }} />;
+        return <Navigate to="/map1"
+          state={{ searchTerm: "", bsr: this.state.bsrValue }} />;
       }
-      return <Redirect push to={{pathname: "/map2",
-        state: { searchTerm: "",
-          bsr: this.state.bsrValue } }} />;
+      return <Navigate to="/map2" 
+        state={{ searchTerm: "", bsr: this.state.bsrValue }} />;
     }
 
     const { children } = this.props
     const { fixed } = this.state
-
+//minWidth={Grid.onlyTablet.minWidth}
     return (
-      <Responsive minWidth={Responsive.onlyTablet.minWidth}>
+      <Container style={{minWidth: 300}}>
         <Visibility
           once={false}
           onBottomPassed={this.showFixedMenu}
@@ -121,11 +118,11 @@ class DesktopContainer extends React.Component {
                 size='large'
                 style={{ marginTop: '0em', border: 'none', zIndex: '1104' }}
               >
-                <Container style={{ alignItems: 'center'}}>
+                <Grid style={{ alignItems: 'center'}}>
                   { fixed &&
                     <Menu.Item
                       name='Home'
-                      as={NavLink} exact to='/'
+                      as={NavLink} to='/'
                       onClick={this.handleItemClick}
                     />
                   }
@@ -164,14 +161,14 @@ class DesktopContainer extends React.Component {
                       right: '20px'}}>
                     Sign Up
                   </Button>
-                </Container>
+                </Grid>
               </Menu>
             </Segment>
           </Segment.Group>
         </Visibility>
 
         {children}
-      </Responsive>
+      </Container>
     )
   }
 }
@@ -196,9 +193,9 @@ class MobileContainer extends React.Component {
   render() {
     const { children } = this.props
     const { sidebarOpened } = this.state
-
+//maxWidth={Container.onlyMobile.maxWidth}
     return (
-      <Responsive maxWidth={Responsive.onlyMobile.maxWidth}>
+      <Container  style={{maxWidth: 600}}>
         <Sidebar.Pushable>
           <Sidebar as={Menu} animation='uncover'  vertical visible={sidebarOpened}
             style={{width: '200px'}}
@@ -243,7 +240,7 @@ class MobileContainer extends React.Component {
             {children}
           </Sidebar.Pusher>
         </Sidebar.Pushable>
-      </Responsive>
+      </Container>
     )
   }
 }

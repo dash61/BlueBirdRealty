@@ -1,5 +1,5 @@
 .leaflet-container {
-  height: 700px; /*600px;*/
+  height: 52vh; /*700px;*/ /*600px;*/ /* or 74vh */
   width: 100%;
 }
 
@@ -60,4 +60,12 @@
 
 br {
   line-height: 1px;
+}
+
+.leaflet-control-geosearch.active form {
+  display: inline-flex;
+}
+
+.reset {
+  font-size: 1.3rem;
 }

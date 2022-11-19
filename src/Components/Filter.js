@@ -58,14 +58,7 @@ const optionType = [
 export default class Filter extends React.Component {
   constructor(props) {
     super(props);
-    this.bsr = 'buy';     // default
-
-    // Do this first, to see if we got passed a search string.
-    // If we did, set the zoom to 9.
-    if (props.location && props.location.state && props.location.state.bsr)
-    {
-      this.bsr = props.location.state.bsr;
-    }
+    this.bsr = props.bsr || 'buy';
 
     this.state = {
       priceValue: 'Price',

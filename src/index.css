@@ -47,3 +47,11 @@ code {
 .ui.visible.left.sidebar~.pusher {
   transform: translate3d(200px, 0, 0);
 }
+
+.spinnerDiv {
+  display: flex;
+  position: relative;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+}

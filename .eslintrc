@@ -1,5 +1,3 @@
 {
-  "extends": "react-app",
-  "tabWidth": 2,
-  "printWidth": 90
+  "extends": "react-app"
 }

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button, Form, Header } from 'semantic-ui-react';
-import { Redirect } from 'react-router';
+import { Navigate } from 'react-router';
 
 
 export default class SellForm extends React.Component
@@ -19,7 +19,7 @@ export default class SellForm extends React.Component
   render () {
     if (this.state.redirect)
     {
-      return <Redirect push to={{pathname: "/"}} />;
+      return <Navigate push to={{pathname: "/"}} />;
     }
     return (
       <Form style={{ margin: '20px'}}>
