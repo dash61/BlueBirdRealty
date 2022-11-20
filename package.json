@@ -39,5 +39,9 @@
   },
   "overrides": {
     "graceful-fs": "^4.2.10"
+  },
+  "esm": {
+    "cjs": true,
+    "mode": "all"
   }
 }
