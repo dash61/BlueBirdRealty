@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import * as serviceWorker from './serviceWorker';
-import 'semantic-ui/dist/semantic.min.css';
+import 'semantic-ui-css/semantic.css';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import LoadingIndicator from 'react-loading-indicator';
 import generateFakeData from './generateFakeData';
