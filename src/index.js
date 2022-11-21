@@ -10,7 +10,7 @@ import HomePage from './Pages/HomePage';
 import AuthPage from './Pages/AuthPage';
 import MapPage from './Pages/MapPage';
 import SellPage from './Pages/SellPage';
-import './index.css'; // include this *after* semantic.min.css!
+import './index.css'; // include this *after* semantic.css
 
 export const FakeDataContext = React.createContext([]);
 
