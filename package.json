@@ -5,7 +5,7 @@
   "dependencies": {
     "@faker-js/faker": "^7.6.0",
     "esri-leaflet": "^3.0.10",
-    "esri-leaflet-vector": "^4.0.0",
+    "esri-leaflet-vector": "^4.0.2",
     "leaflet": "^1.9.2",
     "leaflet-dvf": "^0.3.1",
     "leaflet-geosearch": "^3.7.0",
