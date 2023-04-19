@@ -8,7 +8,7 @@
     "esri-leaflet-vector": "^4.0.0",
     "leaflet": "^1.9.2",
     "leaflet-dvf": "^0.3.1",
-    "leaflet-geosearch": "^3.7.0",
+    "leaflet-geosearch": "^3.8.0",
     "leaflet.markercluster": "^1.5.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
